@@ -6,6 +6,8 @@ import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.utils.Aware_Plugin;
 
+import android.net.Uri;
+
 public class Plugin extends Aware_Plugin {
 
     @Override
@@ -36,12 +38,12 @@ public class Plugin extends Aware_Plugin {
         //REQUIRED_PERMISSIONS.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         //To sync data to the server, you'll need to set this variables from your ContentProvider
-        //DATABASE_TABLES = Provider.DATABASE_TABLES
-        //TABLES_FIELDS = Provider.TABLES_FIELDS
-        //CONTEXT_URIS = new Uri[]{ Provider.Table_Data.CONTENT_URI }
+        DATABASE_TABLES = Provider.DATABASE_TABLES;
+        TABLES_FIELDS = Provider.TABLES_FIELDS;
+        CONTEXT_URIS = new Uri[]{ Provider.Moodtracker_Data.CONTENT_URI };
 
         //Activate plugin
-        Aware.startPlugin(this, "com.aware.plugin.template");
+        Aware.startPlugin(this, "com.aware.plugin.moodtracker");
     }
 
     //This function gets called every 5 minutes by AWARE to make sure this plugin is still running.
@@ -64,6 +66,6 @@ public class Plugin extends Aware_Plugin {
         //e.g., Aware.setSetting(this, Aware_Preferences.STATUS_ACCELEROMETER, false);
 
         //Stop plugin
-        Aware.stopPlugin(this, "com.aware.plugin.template");
+        Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
     }
 }

@@ -11,5 +11,10 @@
         <activity android:name="com.aware.plugin.moodtracker.Settings" android:exported="true" android:theme="@style/Theme.Aware" />
 
     </application>
+    <provider android:name="com.aware.plugin.moodtracker.Provider"
+        android:authorities="${applicationId}.provider.plugin.moodtracker"
+        android:exported="true"
+        android:readPermission="com.aware.READ_CONTEXT_DATA"
+        android:writePermission="com.aware.WRITE_CONTEXT_DATA"/>
 
 </manifest>
