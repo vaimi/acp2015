@@ -6,3 +6,6 @@ aware-plugin/.idea/libraries
 aware-plugin/.DS_Store
 aware-plugin/build
 aware-plugin/captures
+aware-plugin/aware-plugin.iml
+aware-plugin/.idea/modules.xml
+aware-plugin/app/app.iml
