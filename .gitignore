@@ -9,3 +9,5 @@ aware-plugin/captures
 aware-plugin/aware-plugin.iml
 aware-plugin/.idea/modules.xml
 aware-plugin/app/app.iml
+aware-plugin/.idea/gradle.xml
+aware-plugin/.idea/modules.xml

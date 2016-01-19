@@ -42,7 +42,7 @@ public class FacePhoto extends Service {
                 cameraParameters = camera.getParameters();
                 camera.setParameters(cameraParameters);
                 camera.startPreview();
-                camera.takePicture(null, null, pictureCallback);
+                camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -2,17 +2,24 @@ package com.aware.plugin.moodtracker;
 
 import android.content.Intent;
 
+import com.aware.Applications;
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.utils.Aware_Plugin;
 
+import android.content.IntentFilter;
 import android.net.Uri;
 
+import java.util.jar.Manifest;
+
 public class Plugin extends Aware_Plugin {
+    private static AppChangeListener acl = new AppChangeListener();
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+
 
         TAG = "AWARE::"+getResources().getString(R.string.app_name);
         DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
@@ -26,6 +33,14 @@ public class Plugin extends Aware_Plugin {
         //e.g., Aware.setSetting(this, Aware_Preferences.STATUS_ACCELEROMETER,true);
         //NOTE: if using plugin with dashboard, you can specify the sensors you'll use there.
 
+
+        Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, true);
+        Aware.startSensor(this, Aware_Preferences.STATUS_APPLICATIONS);
+
+        IntentFilter broadcastFilter = new IntentFilter();
+        broadcastFilter.addAction(Applications.ACTION_AWARE_APPLICATIONS_FOREGROUND);
+        registerReceiver(acl, broadcastFilter);
+
         //Any active plugin/sensor shares its overall context using broadcasts
         CONTEXT_PRODUCER = new ContextProducer() {
             @Override
@@ -36,6 +51,7 @@ public class Plugin extends Aware_Plugin {
 
         //Add permissions you need (Support for Android M) e.g.,
         //REQUIRED_PERMISSIONS.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        //REQUIRED_PERMISSIONS.add(Manifest.permission.CAMERA);
 
         //To sync data to the server, you'll need to set this variables from your ContentProvider
         DATABASE_TABLES = Provider.DATABASE_TABLES;
@@ -64,6 +80,7 @@ public class Plugin extends Aware_Plugin {
 
         //Deactivate any sensors/plugins you activated here
         //e.g., Aware.setSetting(this, Aware_Preferences.STATUS_ACCELEROMETER, false);
+        Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, false);
 
         //Stop plugin
         Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
