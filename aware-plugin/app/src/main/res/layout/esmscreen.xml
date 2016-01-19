@@ -22,17 +22,17 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/1.png"
+            android:src="@drawable/sad"
             android:id="@+id/sadimage"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/2"
+            android:src="@drawable/neutral"
             android:id="@+id/neutralimage"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/3.png"
+            android:src="@drawable/happy"
             android:id="@+id/happyimage"/>
 
     </LinearLayout>
