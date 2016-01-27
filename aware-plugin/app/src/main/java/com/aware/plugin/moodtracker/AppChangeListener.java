@@ -12,6 +12,5 @@ public class AppChangeListener extends BroadcastReceiver {
         //Object o = intent.getExtras().get("Applications.ACTION_AWARE_APPLICATIONS_FOREGROUND");
         Log.d(Plugin.TAG, "New app on foreground");
         c.startService(new Intent(c, FacePhoto.class));
-
     }
 }

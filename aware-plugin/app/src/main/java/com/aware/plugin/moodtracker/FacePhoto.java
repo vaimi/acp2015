@@ -42,7 +42,6 @@ public class FacePhoto extends Service {
                 cameraParameters = camera.getParameters();
                 camera.setParameters(cameraParameters);
                 camera.startPreview();
-                camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -54,6 +53,7 @@ public class FacePhoto extends Service {
     @Override
     public void onStart(Intent intent, int startID) {
         super.onStart(intent, startID);
+        camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
     }
 
     /*@Override
