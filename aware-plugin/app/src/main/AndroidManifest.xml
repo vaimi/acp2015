@@ -17,12 +17,12 @@
         <service android:name="com.aware.plugin.moodtracker.Plugin" android:exported="true" />
         <activity android:name="com.aware.plugin.moodtracker.Settings" android:exported="true" android:theme="@style/Theme.Aware" />
 
+        <provider android:name="com.aware.plugin.moodtracker.Provider"
+            android:authorities="${applicationId}.provider.plugin.moodtracker"
+            android:exported="true"
+            android:readPermission="com.aware.READ_CONTEXT_DATA"
+            android:writePermission="com.aware.WRITE_CONTEXT_DATA"/>
     </application>
-    <provider android:name="com.aware.plugin.moodtracker.Provider"
-        android:authorities="${applicationId}.provider.plugin.moodtracker"
-        android:exported="true"
-        android:readPermission="com.aware.READ_CONTEXT_DATA"
-        android:writePermission="com.aware.WRITE_CONTEXT_DATA"/>
     <meta-data
         android:name="com.google.android.gms.vision.DEPENDENCIES"
         android:value="face" />

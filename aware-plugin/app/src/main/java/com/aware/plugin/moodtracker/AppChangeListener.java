@@ -9,8 +9,8 @@ import android.util.Log;
 public class AppChangeListener extends BroadcastReceiver {
     public void onReceive(Context c, Intent intent) {
         //final Context c_final = c;
-        //Object o = intent.getExtras().get("Applications.ACTION_AWARE_APPLICATIONS_FOREGROUND");
-        Log.d(Plugin.TAG, "New app on foreground");
+        //String trigger = intent.getExtras().getString("Applications_Foreground.package_name");
+        //Log.d(Plugin.TAG, "Opened " + trigger);
         c.startService(new Intent(c, FacePhoto.class));
     }
 }

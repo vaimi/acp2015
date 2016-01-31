@@ -26,6 +26,12 @@ public class FacePhoto extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(Plugin.TAG, "Created camera service");
+    }
+
+    @Override
+    public void onStart(Intent intent, int startID) {
+        super.onStart(intent, startID);
+        Log.d(Plugin.TAG, "Connected camera service");
 
         if (Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy =
@@ -35,7 +41,12 @@ public class FacePhoto extends Service {
 
         int cameraId = getFrontCameraId();
         if (cameraId != -1) {
-            camera = Camera.open(cameraId);
+            try {
+                releaseCameraAndPreview();
+                camera = Camera.open(cameraId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             SurfaceView surfaceView = new SurfaceView(getApplicationContext());
             try {
                 camera.setPreviewDisplay(surfaceView.getHolder());
@@ -48,12 +59,15 @@ public class FacePhoto extends Service {
         } else {
             Log.d(Plugin.TAG, "No front facing camera");
         }
+        camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
+        //camera.release();
     }
 
-    @Override
-    public void onStart(Intent intent, int startID) {
-        super.onStart(intent, startID);
-        camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
+    private void releaseCameraAndPreview() {
+        if (camera != null) {
+            camera.release();
+            camera = null;
+        }
     }
 
     /*@Override

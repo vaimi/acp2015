@@ -1,14 +1,18 @@
 package com.aware.plugin.moodtracker;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 
 import android.graphics.BitmapFactory;
 
+import com.aware.Aware;
+import com.aware.Aware_Preferences;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.FaceDetector;
@@ -110,6 +114,22 @@ public class PhotoHandler implements Camera.PictureCallback {
         for (int i = 0; i < faces.size(); ++i) {
             Face face = faces.valueAt(i);
             Log.w(Plugin.TAG, Float.toString(face.getIsSmilingProbability()));
+            ContentValues new_data = new ContentValues();
+            new_data.put(Provider.Moodtracker_Data.DEVICE_ID, Aware.getSetting(context.getApplicationContext(), Aware_Preferences.DEVICE_ID));
+            new_data.put(Provider.Moodtracker_Data.TIMESTAMP, System.currentTimeMillis());
+            new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, face.getIsSmilingProbability());
+            new_data.put(Provider.Moodtracker_Data.TRIGGER, "");
+//put the rest of the columns you defined
+
+//Insert the data to the ContentProvider
+            context.getContentResolver().insert(Provider.Moodtracker_Data.CONTENT_URI, new_data);
+                    String[] tableColumns = new String[] {
+                null
+        };
+        Cursor happiness_data = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
+                null, null, null, Provider.Moodtracker_Data.TIMESTAMP + " DESC LIMIT 1");
+            happiness_data.moveToFirst();
+        Log.i(Plugin.TAG, happiness_data.getString(0) + " " + happiness_data.getString(1));
         }
         detector.release();
     }
