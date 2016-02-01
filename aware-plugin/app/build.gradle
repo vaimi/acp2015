@@ -24,6 +24,7 @@ android {
 
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -34,4 +35,5 @@ dependencies {
     compile 'com.awareframework:aware-core:3.9.8@aar'
     compile 'com.koushikdutta.ion:ion:2.1.6'
     compile 'com.google.android.gms:play-services-vision:8.4.0'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
 }
