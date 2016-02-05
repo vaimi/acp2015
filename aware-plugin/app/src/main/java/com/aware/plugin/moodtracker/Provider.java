@@ -34,7 +34,7 @@ public class Provider extends ContentProvider {
     /**
      * ContentProvider database version. Increment every time you modify the database structure
      */
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     //ContentProvider query indexes
     private static final int MOODTRACKER = 1;
@@ -158,6 +158,8 @@ public class Provider extends ContentProvider {
         tableMap.put(Moodtracker_Data._ID, Moodtracker_Data._ID);
         tableMap.put(Moodtracker_Data.TIMESTAMP, Moodtracker_Data.TIMESTAMP);
         tableMap.put(Moodtracker_Data.DEVICE_ID, Moodtracker_Data.DEVICE_ID);
+        tableMap.put(Moodtracker_Data.HAPPINESS_VALUE, Moodtracker_Data.HAPPINESS_VALUE);
+        tableMap.put(Moodtracker_Data.TRIGGER, Moodtracker_Data.TRIGGER);
 
         return true; //let Android know that the database is ready to be used.
     }
