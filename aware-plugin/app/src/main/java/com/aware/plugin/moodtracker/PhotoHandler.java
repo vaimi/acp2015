@@ -23,6 +23,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -126,10 +127,9 @@ public class PhotoHandler implements Camera.PictureCallback {
                     String[] tableColumns = new String[] {
                 null
         };
-        Cursor happiness_data = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
-                null, null, null, Provider.Moodtracker_Data.TIMESTAMP + " DESC LIMIT 1");
-            happiness_data.moveToFirst();
-        Log.i(Plugin.TAG, happiness_data.getString(0) + " " + happiness_data.getString(1));
+            Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI, new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },null, null, null);
+            if(cursor.moveToFirst()) { Toast.makeText(context, cursor.getString(0) + " " + cursor.getString(1), Toast.LENGTH_SHORT).show(); }
+        //Log.i(Plugin.TAG, happiness_data.getString(0) + " " + happiness_data.getString(1));
         }
         detector.release();
     }
