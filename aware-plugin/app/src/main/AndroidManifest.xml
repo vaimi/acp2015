@@ -9,9 +9,18 @@
 
         <service android:name="com.aware.plugin.moodtracker.Plugin" android:exported="true" />
         <activity android:name="com.aware.plugin.moodtracker.Settings" android:exported="true" android:theme="@style/Theme.Aware" />
-        <activity android:name=".EsmQuestionnaire" android:theme="@android:style/Theme.Holo.DialogWhenLarge" />
+
+        <activity android:name=".EsmQuestionnaire">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
 
     </application>
+
     <provider android:name="com.aware.plugin.moodtracker.Provider"
         android:authorities="${applicationId}.provider.plugin.moodtracker"
         android:exported="true"

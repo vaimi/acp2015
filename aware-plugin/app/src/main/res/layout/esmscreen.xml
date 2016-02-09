@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
 <TextView
     android:layout_width="match_parent"
@@ -18,7 +19,7 @@
         android:orientation="horizontal"
         android:id="@+id/smileys"
         android:layout_below="@id/rateMoodText"
-        >
+        android:paddingTop="30dp">
 
         <ImageView
             android:layout_width="50dp"
@@ -45,8 +46,8 @@
     </LinearLayout>
 
     <SeekBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:id="@+id/seekBar"
         android:layout_below="@+id/smileys"
         android:layout_marginTop="40dp"
@@ -55,8 +56,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:indeterminate="false"
-        android:max="120"
-        android:progress="20"/>
+        />
 
 
 </RelativeLayout>
