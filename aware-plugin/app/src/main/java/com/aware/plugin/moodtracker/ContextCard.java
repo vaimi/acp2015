@@ -1,9 +1,11 @@
 package com.aware.plugin.moodtracker;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,7 +15,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.aware.providers.Applications_Provider;
 import com.aware.ui.Stream_UI;
 import com.aware.utils.IContextCard;
 import com.github.mikephil.charting.charts.LineChart;
@@ -74,8 +78,16 @@ public class ContextCard implements IContextCard {
 
             }
         });
-
         refreshGraph(chart, context, myDate.getDays());
+        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
+                null, null, null, null);
+        if (cursor == null)
+            Toast.makeText(context, "null", Toast.LENGTH_SHORT).show();
+        if (cursor != null && cursor.moveToFirst())
+            Toast.makeText(context, "something", Toast.LENGTH_SHORT).show();
+        /*Log.d("AWARE", cursor.getString(0) + ":" + cursor.getString(1));
+        Toast.makeText(context, cursor.getString(0) + ";" + cursor.getString(1), Toast.LENGTH_SHORT).show();*/
+        Toast.makeText(context, "done1", Toast.LENGTH_SHORT).show();
 
         return card;
     }
