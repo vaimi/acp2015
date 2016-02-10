@@ -79,15 +79,14 @@ public class ContextCard implements IContextCard {
             }
         });
         refreshGraph(chart, context, myDate.getDays());
-        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
-                null, null, null, null);
+        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI, new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },null, null, null);
         if (cursor == null)
             Toast.makeText(context, "null", Toast.LENGTH_SHORT).show();
         if (cursor != null && cursor.moveToFirst())
             Toast.makeText(context, "something", Toast.LENGTH_SHORT).show();
         /*Log.d("AWARE", cursor.getString(0) + ":" + cursor.getString(1));
         Toast.makeText(context, cursor.getString(0) + ";" + cursor.getString(1), Toast.LENGTH_SHORT).show();*/
-        Toast.makeText(context, "done1", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context, "done3", Toast.LENGTH_SHORT).show();
 
         return card;
     }

@@ -13,6 +13,8 @@ import android.graphics.BitmapFactory;
 
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
+import com.aware.utils.Aware_Plugin;
+import com.aware.utils.Aware_Sensor;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.FaceDetector;
@@ -127,8 +129,10 @@ public class PhotoHandler implements Camera.PictureCallback {
                     String[] tableColumns = new String[] {
                 null
         };
-            Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI, new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },null, null, null);
-            if(cursor.moveToFirst()) { Toast.makeText(context, cursor.getString(0) + " " + cursor.getString(1), Toast.LENGTH_SHORT).show(); }
+
+        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI, new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },null, null, null);
+        if(cursor.moveToFirst()) { Toast.makeText(context, cursor.getString(0) + " " + cursor.getString(1), Toast.LENGTH_SHORT).show(); }
+        cursor.close();
         //Log.i(Plugin.TAG, happiness_data.getString(0) + " " + happiness_data.getString(1));
         }
         detector.release();

@@ -29,7 +29,7 @@ public class Provider extends ContentProvider {
     /**
      * Authority of this content provider
      */
-    public static String AUTHORITY = "com.aware.provider.plugin.moodtracker";
+    public static String AUTHORITY = "com.aware.plugin.moodtracker.provider.moodtracker";
 
     /**
      * ContentProvider database version. Increment every time you modify the database structure
@@ -149,7 +149,7 @@ public class Provider extends ContentProvider {
      */
     @Override
     public boolean onCreate() {
-        AUTHORITY = getContext().getPackageName() + ".provider.plugin.moodtracker"; //make AUTHORITY dynamic
+        AUTHORITY = getContext().getPackageName() + ".provider.moodtracker"; //make AUTHORITY dynamic
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(AUTHORITY, DATABASE_TABLES[0], MOODTRACKER); //URI for all records
         sUriMatcher.addURI(AUTHORITY, DATABASE_TABLES[0]+"/#", MOODTRACKER_ID); //URI for a single record
@@ -225,7 +225,6 @@ public class Provider extends ContentProvider {
             Log.w(AUTHORITY,"Database unavailable...");
             return null;
         }
-
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         switch (sUriMatcher.match(uri)) {
             case MOODTRACKER:
