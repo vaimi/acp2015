@@ -130,6 +130,7 @@ public class PhotoHandler implements Camera.PictureCallback {
         };
             Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI, new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },null, null, null);
             if(cursor.moveToFirst()) { Toast.makeText(context, cursor.getString(0) + " " + cursor.getString(1), Toast.LENGTH_SHORT).show(); }
+            cursor.close();
         //Log.i(Plugin.TAG, happiness_data.getString(0) + " " + happiness_data.getString(1));
         }
         detector.release();
