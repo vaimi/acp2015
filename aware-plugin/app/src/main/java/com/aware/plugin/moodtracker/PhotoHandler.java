@@ -56,9 +56,7 @@ public class PhotoHandler implements Camera.PictureCallback {
         Bitmap bitmap = null;
 
         if (data != null) {
-            Bitmap orignalImage = BitmapFactory.decodeByteArray(data, 0, data.length);
-            bitmap = rotate(orignalImage, 270);
-
+            bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
             if (bitmap != null) {
 
                 File file = new File(Environment.getExternalStorageDirectory() + "/dirr");

@@ -9,8 +9,10 @@ import android.os.IBinder;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 import com.aware.Aware;
 import com.aware.providers.Applications_Provider;
@@ -47,6 +49,7 @@ public class FacePhoto extends Service {
             try {
                 camera.setPreviewDisplay(surfaceView.getHolder());
                 cameraParameters = camera.getParameters();
+                setCameraRotation(cameraId);
                 camera.setParameters(cameraParameters);
                 camera.startPreview();
             } catch (IOException e) {
@@ -58,6 +61,26 @@ public class FacePhoto extends Service {
         }
         return true;
     }
+
+    public void setCameraRotation(int cameraId) {
+        android.hardware.Camera.CameraInfo info =
+                new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+        WindowManager window = (WindowManager) getSystemService(getApplicationContext().WINDOW_SERVICE);
+        int rotation = window.getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_90: degrees = 90; break;
+            case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_270: degrees = 270; break;
+        }
+        int result = (info.orientation + degrees) % 360;
+        camera.setDisplayOrientation(result);
+        cameraParameters.setRotation(result);
+    }
+
+
 
     @Override
     public void onStart(Intent intent, int startID) {
