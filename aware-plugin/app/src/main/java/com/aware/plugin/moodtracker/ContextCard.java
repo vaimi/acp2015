@@ -30,6 +30,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class ContextCard implements IContextCard {
@@ -51,17 +53,18 @@ public class ContextCard implements IContextCard {
 
         //Attempt to start from current datetime (month, year)
         Calendar c = Calendar.getInstance();
-        myDate = new MyDate(c.get(Calendar.MONTH), c.get(Calendar.YEAR));
+        myDate = new MyDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH));
         //Remember month value is 1 less than actual month value
         month.setText("" + (myDate.getMonth() + 1));
         year.setText("" + (myDate.getYear()));
+        Log.d("AWARE", "" + "Year:" + myDate.getYear() + " Month: " + myDate.getMonth() + " Days: " + myDate.getDays());
 
         //Set button callbacks
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 myDate.minusOneMonth();
-                refreshGraph(chart, context, myDate.getDays());
+                refreshGraph(chart, context, myDate);
                 month.setText("" + (myDate.getMonth() + 1));
                 year.setText("" + (myDate.getYear()));
                 Log.d("AWARE", "" + "Year:" + myDate.getYear() + " Month: " + myDate.getMonth() + " Days: " + myDate.getDays());
@@ -71,44 +74,84 @@ public class ContextCard implements IContextCard {
             @Override
             public void onClick(View v) {
                 myDate.plusOneMonth();
-                refreshGraph(chart, context, myDate.getDays());
+                refreshGraph(chart, context, myDate);
                 month.setText("" + (myDate.getMonth() + 1));
                 year.setText("" + (myDate.getYear()));
                 Log.d("AWARE", "" + "Year:" + myDate.getYear() + " Month: " + myDate.getMonth() + " Days: " + myDate.getDays());
 
             }
         });
-        refreshGraph(chart, context, myDate.getDays());
-        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI, new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },null, null, null);
-        if (cursor == null)
-            Toast.makeText(context, "null", Toast.LENGTH_SHORT).show();
-        if (cursor != null && cursor.moveToFirst())
-            Toast.makeText(context, "something", Toast.LENGTH_SHORT).show();
-        /*Log.d("AWARE", cursor.getString(0) + ":" + cursor.getString(1));
-        Toast.makeText(context, cursor.getString(0) + ";" + cursor.getString(1), Toast.LENGTH_SHORT).show();*/
-        //Toast.makeText(context, "done3", Toast.LENGTH_SHORT).show();
+        refreshGraph(chart, context, myDate);
+
+        //Toast.makeText(context, "done7", Toast.LENGTH_SHORT).show();
 
         return card;
     }
 
 
 
-    private void refreshGraph(LinearLayout chart, Context context, int days) {
+    private void refreshGraph(LinearLayout chart, Context context, MyDate myDate) {
         chart.removeAllViews();
-        chart.addView(drawGraph(context, days));
+        chart.addView(drawGraph(context, myDate));
         chart.invalidate();
     }
-
-    private View drawGraph(Context context, int days) {
-        //TODO - Get data
+    //convert it into labels as:
+    /*very happy: (6/7 - 1]
+    happy:  (5/7 - 6/7]
+    slightly happy: (4/7 - 5/7]
+    neutral:  [3/7 - 4/7]
+    slightly sad: [2/7 - 3/7)
+    sad:  [1/7 - 2/7)
+    very sad: [0 - 1/7)*/
+    private View drawGraph(Context context, MyDate myDate) {
         //TODO - Better to show max day as well each time
         ArrayList<String> x = new ArrayList<>();
         ArrayList<Entry> barEntries = new ArrayList<>();
 
-        for(int i=1; i<=days; i++) {
+        for(int i=1; i<=myDate.getDays(); i++) {
             x.add(String.valueOf(i));
-            // nextInt: [0,n)
-            barEntries.add(new Entry(new Random().nextInt(7), i));
+        }
+
+        // nextInt: [0,n)
+        //barEntries.add(new Entry(new Random().nextInt(7), i));
+
+        //Get data from database, only need data from this month, also filter records with -1 as happiness value
+        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
+                new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },
+                Provider.Moodtracker_Data.HAPPINESS_VALUE  + " != -1 and " + Provider.Moodtracker_Data.TIMESTAMP + " >= " + myDate.getMonthStartTime()
+                    + " and " + Provider.Moodtracker_Data.TIMESTAMP + " < " + myDate.getMonthEndTime(), null, null);
+
+        //Process data first
+        HashMap<Integer, HappinessObject> mDayHappiness = new HashMap<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Log.d("AWARE", "" + cursor.getLong(0) + " " + cursor.getDouble(1));
+                long timestamp = cursor.getLong(0);
+                double happiness = cursor.getDouble(1);
+
+                int day = MyDate.toDay(timestamp);
+                Log.d("AWARE", "" + day);
+                HappinessObject happinessObject;
+
+                if (mDayHappiness.containsKey(day))   //Have already some value, need to average them
+                    happinessObject = mDayHappiness.get(day);
+                else
+                    happinessObject = new HappinessObject();
+
+                happinessObject.addValue(happiness);
+                mDayHappiness.put(day, happinessObject);
+
+            } while(cursor.moveToNext());
+        }
+        if (cursor != null && !cursor.isClosed())
+            cursor.close();
+
+        //Add data to the right day buffer
+        for (Map.Entry<Integer, HappinessObject> entry: mDayHappiness.entrySet()) {
+            Integer day = entry.getKey();
+            Double happiness = entry.getValue().getValue();
+            //second param of Entry starting from 0, and our day variable counts from 1
+            barEntries.add(new Entry(Float.parseFloat("" + happiness), day - 1));
         }
 
         LineDataSet dataSet = new LineDataSet(barEntries, "Happiness");
@@ -157,5 +200,31 @@ public class ContextCard implements IContextCard {
         mChart.animateX(1000);
 
         return mChart;
+    }
+
+    private class HappinessObject {
+        private int records;
+        private double value;
+
+        public HappinessObject() {
+            this.records = 0;
+            this.value = -1;
+        }
+
+        public Double getValue() {
+            return this.value;
+        }
+
+        public void addValue(double newValue){
+            if (this.value == .1)
+                this.value = newValue;
+            else
+                average(newValue);
+            records++;
+        }
+
+        private void average(double newValue) {
+            this.value = ((records * value) + newValue) * 1.0 / (records + 1);
+        }
     }
 }
