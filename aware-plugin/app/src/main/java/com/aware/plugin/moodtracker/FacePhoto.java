@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.aware.Aware;
 import com.aware.providers.Applications_Provider;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class FacePhoto extends Service {
         super.onCreate();
         Log.d(Plugin.TAG, "Created camera service");
     }
+
 
     private Boolean prepareCamera() {
         int cameraId = getFrontCameraId();
@@ -68,10 +70,13 @@ public class FacePhoto extends Service {
             StrictMode.setThreadPolicy(policy);
         }
 
-        SystemClock.sleep(5000);
+        // Wait before taking the photo
+        SystemClock.sleep(Integer.valueOf(Aware.getSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT)));
 
+        // Get the last app
         Cursor lastApp = getApplicationContext().getContentResolver().query(Applications_Provider.Applications_Foreground.CONTENT_URI, new String[]{"package_name"}, null, null, "timestamp DESC LIMIT 1");
         if ((lastApp != null) && (lastApp.moveToFirst())) {
+            // Check that app on front haven't changed
             if (lastApp.getString(0).equals(intent.getExtras().getString("AppName"))) {
                 if (prepareCamera()) {
                     camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
@@ -80,6 +85,7 @@ public class FacePhoto extends Service {
                 Log.d(Plugin.TAG, "App on front changed. Aborting");
             }
         }
+        // Close cursor
         if ((lastApp != null) && !lastApp.isClosed()) {
             lastApp.close();
         }
