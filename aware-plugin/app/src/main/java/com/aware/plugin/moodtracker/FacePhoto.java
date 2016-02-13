@@ -3,8 +3,10 @@ package com.aware.plugin.moodtracker;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.StrictMode;
 import android.os.SystemClock;
@@ -47,9 +49,9 @@ public class FacePhoto extends Service {
             }
             SurfaceView surfaceView = new SurfaceView(getApplicationContext());
             try {
-                camera.setPreviewDisplay(surfaceView.getHolder());
+                camera.setPreviewTexture(new SurfaceTexture(0));
                 cameraParameters = camera.getParameters();
-                setCameraRotation(cameraId);
+                //setCameraRotation(cameraId);
                 camera.setParameters(cameraParameters);
                 camera.startPreview();
             } catch (IOException e) {
@@ -77,7 +79,7 @@ public class FacePhoto extends Service {
         }
         int result = (info.orientation + degrees) % 360;
         camera.setDisplayOrientation(result);
-        cameraParameters.setRotation(result);
+        cameraParameters.setRotation(90);
     }
 
 
@@ -102,7 +104,13 @@ public class FacePhoto extends Service {
             // Check that app on front haven't changed
             if (lastApp.getString(0).equals(intent.getExtras().getString("AppName"))) {
                 if (prepareCamera()) {
-                    camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
+                        }
+                    }, 1000);
+
                 }
             } else {
                 Log.d(Plugin.TAG, "App on front changed. Aborting");

@@ -56,9 +56,12 @@ public class PhotoHandler implements Camera.PictureCallback {
         Bitmap bitmap = null;
 
         if (data != null) {
-            bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            Bitmap originalBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            int angleToRotate = CommonMethods.getRotationAngle(context, Camera.CameraInfo.CAMERA_FACING_FRONT);
+            // Solve image inverting problem
+            angleToRotate = angleToRotate + 180;
+            bitmap = rotate(originalBitmap, angleToRotate);
             if (bitmap != null) {
-
                 File file = new File(Environment.getExternalStorageDirectory() + "/dirr");
                 if (!file.isDirectory()) {
                     file.mkdir();
@@ -134,5 +137,7 @@ public class PhotoHandler implements Camera.PictureCallback {
         detector.release();
     }
 }
+
+
 
 
