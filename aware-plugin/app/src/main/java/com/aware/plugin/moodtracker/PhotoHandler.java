@@ -32,10 +32,12 @@ import java.io.IOException;
 public class PhotoHandler implements Camera.PictureCallback {
 
     private final Context context;
+    private final Intent intent;
     private Bitmap photoFrameAsBmb = null;
 
-    public PhotoHandler(Context context) {
+    public PhotoHandler(Context context, Intent intent) {
         this.context = context;
+        this.intent = intent;
     }
 
     public static Bitmap rotate(Bitmap bitmap, int degree) {
@@ -93,13 +95,14 @@ public class PhotoHandler implements Camera.PictureCallback {
 
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setTrackingEnabled(false)
-                .setLandmarkType(FaceDetector.ALL_LANDMARKS)
+ //               .setLandmarkType(FaceDetector.ALL_LANDMARKS)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
                 .setProminentFaceOnly(true)
                 .build();
 
 
         SparseArray<Face> faces = detector.detect(frame);
+        detector.release();
 
         if (!detector.isOperational()) {
             Log.w(Plugin.TAG, "Face detector dependencies are not yet available.");
@@ -121,20 +124,18 @@ public class PhotoHandler implements Camera.PictureCallback {
             new_data.put(Provider.Moodtracker_Data.DEVICE_ID, Aware.getSetting(context.getApplicationContext(), Aware_Preferences.DEVICE_ID));
             new_data.put(Provider.Moodtracker_Data.TIMESTAMP, System.currentTimeMillis());
             new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, face.getIsSmilingProbability());
-            new_data.put(Provider.Moodtracker_Data.TRIGGER, "");
-//put the rest of the columns you defined
+            new_data.put(Provider.Moodtracker_Data.TRIGGER, intent.getExtras().getString("AppName"));
 
-//Insert the data to the ContentProvider
+            //Insert the data to the ContentProvider
             context.getContentResolver().insert(Provider.Moodtracker_Data.CONTENT_URI, new_data);
                     String[] tableColumns = new String[] {
                 null
         };
-            Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI, new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },null, null, null);
-            if(cursor.moveToFirst()) { Toast.makeText(context, cursor.getString(0) + " " + cursor.getString(1), Toast.LENGTH_SHORT).show(); }
-            cursor.close();
-        //Log.i(Plugin.TAG, happiness_data.getString(0) + " " + happiness_data.getString(1));
+        // For debug
+        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI, new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },null, null, null);
+        if(cursor.moveToFirst()) { Toast.makeText(context, cursor.getString(0) + " " + cursor.getString(1), Toast.LENGTH_SHORT).show(); }
+        cursor.close();
         }
-        detector.release();
     }
 }
 

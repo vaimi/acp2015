@@ -46,8 +46,8 @@ public class CommonMethods {
         } else { // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
-        Log.d("AWARE", "Orientation: " + Integer.toString(rotation));
-        Log.d("AWARE", "Rotate: " + Integer.toString(result));
+        //Log.d("AWARE", "Orientation: " + Integer.toString(rotation));
+        //Log.d("AWARE", "Rotate: " + Integer.toString(result));
         return result;
     }
 }

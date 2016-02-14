@@ -104,10 +104,11 @@ public class FacePhoto extends Service {
             // Check that app on front haven't changed
             if (lastApp.getString(0).equals(intent.getExtras().getString("AppName"))) {
                 if (prepareCamera()) {
+                    final Intent lastIntent = intent;
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
+                            camera.takePicture(null, null, new PhotoHandler(getApplicationContext(), lastIntent));
                         }
                     }, 1000);
 
