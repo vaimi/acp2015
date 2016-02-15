@@ -1,95 +1,236 @@
 package com.aware.plugin.moodtracker;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.aware.providers.Applications_Provider;
 import com.aware.ui.Stream_UI;
 import com.aware.utils.IContextCard;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class ContextCard implements IContextCard {
-
-    //Set how often your card needs to refresh if the stream is visible (in milliseconds)
-    private int refresh_interval = 1 * 1000; //1 second = 1000 milliseconds
-
-    //DEMO: we are demo'ing a counter incrementing in real-time
-    private int counter = 0;
-
-    private Handler uiRefresher = new Handler(Looper.getMainLooper());
-    private Runnable uiChanger = new Runnable() {
-        @Override
-        public void run() {
-            counter++;
-
-            //Modify card's content here once it's initialized
-            if( card != null ) {
-                //DEMO display the counter value
-                counter_txt.setText(""+counter);
-            }
-
-            //Reset timer and schedule the next card refresh
-            uiRefresher.postDelayed(uiChanger, refresh_interval);
-        }
-    };
-
-    //Empty constructor used to instantiate this card
+    //Empty constructor
     public ContextCard(){}
 
-    //You may use sContext on uiChanger to do queries to databases, etc.
-    private Context sContext;
-
-    //Declare here all the UI elements you'll be accessing
-    private View card;
-    private TextView counter_txt;
+    //Static values to check later
+    MyDate myDate;
 
     @Override
-    public View getContextCard(Context context) {
-        sContext = context;
-
-        //Tell Android that you'll monitor the stream statuses
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Stream_UI.ACTION_AWARE_STREAM_OPEN);
-        filter.addAction(Stream_UI.ACTION_AWARE_STREAM_CLOSED);
-        context.registerReceiver(streamObs, filter);
-
-        //Load card information to memory
+    public View getContextCard(final Context context) {
         LayoutInflater sInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        card = sInflater.inflate(R.layout.card, null);
+        View card = sInflater.inflate(R.layout.card, null);
+        final LinearLayout chart = (LinearLayout) card.findViewById(R.id.chart);
+        final TextView month = (TextView) card.findViewById(R.id.month);
+        final TextView year = (TextView) card.findViewById(R.id.year);
+        Button previousButton = (Button) card.findViewById(R.id.prev_btn);
+        Button nextButton = (Button) card.findViewById(R.id.next_btn);
 
-        //Initialize UI elements from the card
-        //DEMO only
-        counter_txt = (TextView) card.findViewById(R.id.counter);
+        //Attempt to start from current datetime (month, year)
+        Calendar c = Calendar.getInstance();
+        myDate = new MyDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH));
+        //Remember month value is 1 less than actual month value
+        month.setText("" + (myDate.getMonth() + 1));
+        year.setText("" + (myDate.getYear()));
+        Log.d("AWARE", "" + "Year:" + myDate.getYear() + " Month: " + myDate.getMonth() + " Days: " + myDate.getDays());
 
-        //Begin refresh cycle
-        uiRefresher.postDelayed(uiChanger, refresh_interval);
+        //Set button callbacks
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDate.minusOneMonth();
+                refreshGraph(chart, context, myDate);
+                month.setText("" + (myDate.getMonth() + 1));
+                year.setText("" + (myDate.getYear()));
+                Log.d("AWARE", "" + "Year:" + myDate.getYear() + " Month: " + myDate.getMonth() + " Days: " + myDate.getDays());
+            }
+        });
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDate.plusOneMonth();
+                refreshGraph(chart, context, myDate);
+                month.setText("" + (myDate.getMonth() + 1));
+                year.setText("" + (myDate.getYear()));
+                Log.d("AWARE", "" + "Year:" + myDate.getYear() + " Month: " + myDate.getMonth() + " Days: " + myDate.getDays());
 
-        //Return the card to AWARE/apps
+            }
+        });
+        refreshGraph(chart, context, myDate);
+
+        //Toast.makeText(context, "done7", Toast.LENGTH_SHORT).show();
+
         return card;
     }
 
-    //This is a BroadcastReceiver that keeps track of stream status. Used to stop the refresh when user leaves the stream and restart again otherwise
-    private StreamObs streamObs = new StreamObs();
-    public class StreamObs extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if( intent.getAction().equals(Stream_UI.ACTION_AWARE_STREAM_OPEN) ) {
-                //start refreshing when user enters the stream
-                uiRefresher.postDelayed(uiChanger, refresh_interval);
 
-                //DEMO only, reset the counter every time the user opens the stream
-                counter = 0;
-            }
-            if( intent.getAction().equals(Stream_UI.ACTION_AWARE_STREAM_CLOSED) ) {
-                //stop refreshing when user leaves the stream
-                uiRefresher.removeCallbacks(uiChanger);
-                uiRefresher.removeCallbacksAndMessages(null);
-            }
+
+    private void refreshGraph(LinearLayout chart, Context context, MyDate myDate) {
+        chart.removeAllViews();
+        chart.addView(drawGraph(context, myDate));
+        chart.invalidate();
+    }
+    //convert it into labels as:
+    /*very happy: (6/7 - 1]
+    happy:  (5/7 - 6/7]
+    slightly happy: (4/7 - 5/7]
+    neutral:  [3/7 - 4/7]
+    slightly sad: [2/7 - 3/7)
+    sad:  [1/7 - 2/7)
+    very sad: [0 - 1/7)*/
+    private View drawGraph(Context context, MyDate myDate) {
+        //TODO - Better to show max day as well each time
+        ArrayList<String> x = new ArrayList<>();
+        ArrayList<Entry> barEntries = new ArrayList<>();
+
+        for(int i=1; i<=myDate.getDays(); i++) {
+            x.add(String.valueOf(i));
+        }
+
+        // nextInt: [0,n)
+        //barEntries.add(new Entry(new Random().nextInt(7), i));
+
+        //Get data from database, only need data from this month, also filter records with -1 as happiness value. 0 - 1
+        /*Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
+                new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },
+                Provider.Moodtracker_Data.HAPPINESS_VALUE  + " != -1 and " + Provider.Moodtracker_Data.TIMESTAMP + " >= " + myDate.getMonthStartTime()
+                    + " and " + Provider.Moodtracker_Data.TIMESTAMP + " < " + myDate.getMonthEndTime(), null, null);*/
+        //Get data of ESM values
+        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
+                new String[] {Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE},
+                    Provider.Moodtracker_Data.TRIGGER + " == \"ESMHAPPINESS\" and "
+                    + Provider.Moodtracker_Data.TIMESTAMP + " >= " + myDate.getMonthStartTime() + " and "
+                    + Provider.Moodtracker_Data.TIMESTAMP + " < " + myDate.getMonthEndTime(), null, null);
+
+        //Process data first. 0, 1, 2, 3, 4, 5, 6
+        HashMap<Integer, HappinessObject> mDayHappiness = new HashMap<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Log.d("AWARE", "" + cursor.getLong(0) + " " + cursor.getDouble(1));
+                long timestamp = cursor.getLong(0);
+                double happiness = cursor.getDouble(1);
+
+                int day = MyDate.toDay(timestamp);
+                Log.d("AWARE", "" + day);
+                HappinessObject happinessObject;
+
+                if (mDayHappiness.containsKey(day))   //Have already some value, need to average them
+                    happinessObject = mDayHappiness.get(day);
+                else
+                    happinessObject = new HappinessObject();
+
+                happinessObject.addValue(happiness);
+                mDayHappiness.put(day, happinessObject);
+
+            } while(cursor.moveToNext());
+        }
+        if (cursor != null && !cursor.isClosed())
+            cursor.close();
+
+        //Add data to the right day buffer
+        for (Map.Entry<Integer, HappinessObject> entry: mDayHappiness.entrySet()) {
+            Integer day = entry.getKey();
+            Double happiness = entry.getValue().getValue();
+            //second param of Entry starting from 0, and our day variable counts from 1
+            barEntries.add(new Entry(Float.parseFloat("" + happiness), day - 1));
+        }
+
+        LineDataSet dataSet = new LineDataSet(barEntries, "Happiness");
+        dataSet.setColor(Color.parseColor("#33B5E5"));
+        dataSet.setDrawValues(false);
+
+        LineData data = new LineData(x, dataSet);
+
+        LineChart mChart = new LineChart(context);
+
+        mChart.setContentDescription("");
+        mChart.setDescription("");
+        mChart.setMinimumHeight(200);
+        mChart.setBackgroundColor(Color.WHITE);
+        mChart.setDrawGridBackground(false);
+        mChart.setDrawBorders(false);
+
+        YAxis left = mChart.getAxisLeft();
+        left.setDrawLabels(true);
+        left.setDrawGridLines(true);
+        left.setDrawAxisLine(true);
+        left.setLabelCount(7, true);
+        left.setAxisMaxValue(6);
+        left.setAxisMinValue(0);
+        left.setValueFormatter(new MyYAxisValueFormatter());
+
+        YAxis right = mChart.getAxisRight();
+        right.setDrawAxisLine(false);
+        right.setDrawLabels(false);
+        right.setDrawGridLines(false);
+
+        LimitLine ll = new LimitLine(3, "");
+        ll.setLineWidth(4f);
+        ll.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        left.addLimitLine(ll);
+        left.setDrawLimitLinesBehindData(true);
+
+        XAxis bottom = mChart.getXAxis();
+        bottom.setPosition(XAxis.XAxisPosition.BOTTOM);
+        bottom.setSpaceBetweenLabels(0);
+        bottom.setDrawGridLines(false);
+        bottom.setDrawAxisLine(true);
+
+        mChart.setData(data);
+        mChart.invalidate();
+        mChart.animateX(1000);
+
+        return mChart;
+    }
+
+    private class HappinessObject {
+        private int records;
+        private double value;
+
+        public HappinessObject() {
+            this.records = 0;
+            this.value = -1;
+        }
+
+        public Double getValue() {
+            return this.value;
+        }
+
+        public void addValue(double newValue){
+            if (this.value == .1)
+                this.value = newValue;
+            else
+                average(newValue);
+            records++;
+        }
+
+        private void average(double newValue) {
+            this.value = ((records * value) + newValue) * 1.0 / (records + 1);
         }
     }
 }

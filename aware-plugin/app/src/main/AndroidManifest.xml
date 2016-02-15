@@ -30,7 +30,6 @@
             android:exported="true"
             android:theme="@style/Theme.Aware" />
 
-
         <provider
             android:name=".Provider"
             android:authorities="${applicationId}.provider.plugin.moodtracker"

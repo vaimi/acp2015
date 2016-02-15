@@ -13,6 +13,8 @@ import android.graphics.BitmapFactory;
 
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
+import com.aware.utils.Aware_Plugin;
+import com.aware.utils.Aware_Sensor;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.FaceDetector;
