@@ -21,6 +21,10 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
     //ESM setting
     public static final String STATUS_PLUGIN_MOODTRACKER_ESM = "status_plugin_moodtracker_esm";
 
+    //ESM camera preview setting
+    public static final String STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW = "status_plugin_moodtracker_esm_preview";
+
+
     //Photo analysis setting
     public static final String STATUS_PLUGIN_MOODTRACKER_PHOTO = "status_plugin_moodtracker_photo";
 
@@ -31,6 +35,7 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
     private static CheckBoxPreference status;
     private static CheckBoxPreference statusContextCard;
     private static CheckBoxPreference statusEsm;
+    private static CheckBoxPreference statusEsmPreview;
     private static CheckBoxPreference statusPhoto;
     private static EditTextPreference waitTime;
 
@@ -56,6 +61,8 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
 
         statusEsm = (CheckBoxPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_ESM);
 
+        statusEsmPreview = (CheckBoxPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW);
+
         statusPhoto = (CheckBoxPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_PHOTO);
 
         waitTime = (EditTextPreference) findPreference(PLUGIN_MOODTRACKER_WAIT);
@@ -77,6 +84,11 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
             boolean is_active = sharedPreferences.getBoolean(key, false);
             Aware.setSetting(getApplicationContext(), key, is_active);
             statusEsm.setChecked(is_active);
+        }
+        if( setting.getKey().equals(STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW)) {
+            boolean is_active = sharedPreferences.getBoolean(key, false);
+            Aware.setSetting(getApplicationContext(), key, is_active);
+            statusEsmPreview.setChecked(is_active);
         }
         if( setting.getKey().equals(STATUS_PLUGIN_MOODTRACKER_PHOTO)) {
             boolean is_active = sharedPreferences.getBoolean(key, false);

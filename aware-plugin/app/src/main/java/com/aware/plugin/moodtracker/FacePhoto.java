@@ -40,7 +40,7 @@ public class FacePhoto extends Service {
      */
     private Boolean prepareCamera() {
         // Get front camera
-        int cameraId = getFrontCameraId();
+        int cameraId = CommonMethods.getFrontCameraId();
         if (cameraId != -1) {
             try {
                 camera = Camera.open(cameraId);
@@ -111,18 +111,5 @@ public class FacePhoto extends Service {
         } else {
             Log.e(Plugin.TAG, "Unable to fetch last app");
         }
-    }
-
-    /**
-     * Get front camera id
-     * @return Int -1 if fails, camera id on success
-     */
-    private int getFrontCameraId() {
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        for (int i=0; i<Camera.getNumberOfCameras(); i++) {
-            Camera.getCameraInfo(i, cameraInfo);
-            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) return i;
-        }
-        return -1;
     }
 }

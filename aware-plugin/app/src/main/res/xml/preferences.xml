@@ -23,6 +23,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <CheckBoxPreference
+        android:key="status_plugin_moodtracker_esm_preview"
+        android:title="ESM camera preview"
+        android:defaultValue="true"
+        android:persistent="true"
+        android:summary="Activate/deactivate ESM preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <CheckBoxPreference
         android:key="status_plugin_moodtracker_photo"

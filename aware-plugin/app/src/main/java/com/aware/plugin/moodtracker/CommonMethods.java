@@ -12,6 +12,21 @@ import com.aware.providers.Applications_Provider;
  * Created by Mikko on 13.2.2016.
  */
 public class CommonMethods {
+
+    /**
+     * Get front camera id
+     * @return Int -1 if fails, camera id on success
+     */
+    public static int getFrontCameraId() {
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        for (int i=0; i<Camera.getNumberOfCameras(); i++) {
+            Camera.getCameraInfo(i, cameraInfo);
+            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) return i;
+        }
+        return -1;
+    }
+
+
     /**
      * Get camera rotation
      *
@@ -54,7 +69,7 @@ public class CommonMethods {
         Cursor cursor = context
                 .getContentResolver()
                 .query(Applications_Provider.Applications_Foreground.CONTENT_URI,
-                        new String[] { Applications_Provider.Applications_Foreground.PACKAGE_NAME},
+                        new String[]{Applications_Provider.Applications_Foreground.PACKAGE_NAME},
                         null,
                         null,
                         Applications_Provider.Applications_Foreground.TIMESTAMP + " DESC LIMIT 1");

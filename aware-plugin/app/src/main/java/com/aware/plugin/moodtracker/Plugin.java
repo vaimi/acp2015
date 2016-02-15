@@ -34,6 +34,9 @@ public class Plugin extends Aware_Plugin {
         if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).length() == 0 ) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, true);
         }
+        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).length() == 0 ) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, true);
+        }
         if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).length() == 0 ) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, true);
         }
