@@ -2,20 +2,25 @@ package com.aware.plugin.moodtracker;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.StrictMode;
+import android.os.SystemClock;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+
+import com.aware.Aware;
 
 import java.io.IOException;
 
 public class FacePhoto extends Service {
-    private SurfaceHolder surfaceHolder;
     private Camera camera;
     private Camera.Parameters cameraParameters;
+
+    // Warmup time for camera. Short warmup may cause e.g. dark photos
+    private final int previewTime = 1000;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -25,13 +30,49 @@ public class FacePhoto extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(Plugin.TAG, "Created camera service");
+        if (Plugin.DEBUG) Log.d(Plugin.TAG, "Created camera service");
     }
 
+    /**
+     * Prepares camera to take picture. NOTE that it doesn't steal the camera if it's reserved!
+     *
+     * @return Boolean success (true/fail)
+     */
+    private Boolean prepareCamera() {
+        // Get front camera
+        int cameraId = CommonMethods.getFrontCameraId();
+        if (cameraId != -1) {
+            try {
+                camera = Camera.open(cameraId);
+            } catch (Exception e) {
+                if (Plugin.DEBUG) Log.d(Plugin.TAG, "Camera reserved, aborting");
+                return false;
+            }
+            try {
+                // Hack to make preview-less camera
+                camera.setPreviewTexture(new SurfaceTexture(0));
+                cameraParameters = camera.getParameters();
+                camera.setParameters(cameraParameters);
+                camera.startPreview();
+            } catch (IOException e) {
+                if (Plugin.DEBUG) Log.d(Plugin.TAG, "Cannot make preview, aborting");
+                return false;
+            }
+        } else {
+            Log.e(Plugin.TAG, "No front facing camera");
+        }
+        return true;
+    }
+
+    /**
+     * Called on start. Basically prepares the camera, takes photo and launches pictureHandler.
+     * @param intent
+     * @param startID
+     */
     @Override
     public void onStart(Intent intent, int startID) {
         super.onStart(intent, startID);
-        Log.d(Plugin.TAG, "Connected camera service");
+        if (Plugin.DEBUG) Log.d(Plugin.TAG, "Connected camera service");
 
         if (Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy =
@@ -39,60 +80,36 @@ public class FacePhoto extends Service {
             StrictMode.setThreadPolicy(policy);
         }
 
-        int cameraId = getFrontCameraId();
-        if (cameraId != -1) {
-            try {
-                releaseCameraAndPreview();
-                camera = Camera.open(cameraId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            SurfaceView surfaceView = new SurfaceView(getApplicationContext());
-            try {
-                camera.setPreviewDisplay(surfaceView.getHolder());
-                cameraParameters = camera.getParameters();
-                camera.setParameters(cameraParameters);
-                camera.startPreview();
-            } catch (IOException e) {
-                e.printStackTrace();
+        // Wait before taking the photo.
+        int waitTime = Integer.valueOf(Aware.getSetting(getApplicationContext(),
+                Settings.PLUGIN_MOODTRACKER_WAIT));
+        SystemClock.sleep(waitTime);
+
+        // Get last app
+        String lastApp = CommonMethods.getLastApp(getApplicationContext());
+
+        if (lastApp != null) {
+            // Check that app on front haven't changed
+            if (lastApp.equals(intent.getExtras().getString("AppName"))) {
+                // Prepare camera
+                if (prepareCamera()) {
+                    final Intent lastIntent = intent;
+                    // Wait a bit to warm up the camera
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            camera.takePicture(null,
+                                    null,
+                                    new PhotoHandler(getApplicationContext(), lastIntent));
+                        }
+                    }, previewTime);
+
+                }
+            } else {
+                if (Plugin.DEBUG) Log.d(Plugin.TAG, "App on front changed. Aborting");
             }
         } else {
-            Log.d(Plugin.TAG, "No front facing camera");
+            Log.e(Plugin.TAG, "Unable to fetch last app");
         }
-        camera.takePicture(null, null, new PhotoHandler(getApplicationContext()));
-        //camera.release();
-    }
-
-    private void releaseCameraAndPreview() {
-        if (camera != null) {
-            camera.release();
-            camera = null;
-        }
-    }
-
-    /*@Override
-    protected void onPause()
-    {
-        super.onPause();
-        if (camera != null) {
-            camera.stopPreview();
-            camera.release();
-            camera = null;
-        }
-    }*/
-
-    Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
-        public void onPictureTaken(final byte[] data, Camera camera) {
-            Log.d(Plugin.TAG, "Picture taken");
-        }
-    };
-
-    int getFrontCameraId() {
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        for (int i=0; i<Camera.getNumberOfCameras(); i++) {
-            Camera.getCameraInfo(i, cameraInfo);
-            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) return i;
-        }
-        return -1;
     }
 }

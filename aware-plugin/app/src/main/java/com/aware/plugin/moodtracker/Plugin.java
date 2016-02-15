@@ -25,8 +25,23 @@ public class Plugin extends Aware_Plugin {
         DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
         //Initialize our plugin's settings
-        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_TEMPLATE).length() == 0 ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_TEMPLATE, true);
+        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER).length() == 0 ) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, true);
+        }
+        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD).length() == 0 ) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, true);
+        }
+        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).length() == 0 ) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, true);
+        }
+        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).length() == 0 ) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, true);
+        }
+        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).length() == 0 ) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, true);
+        }
+        if( Aware.getSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT).length() == 0 ) {
+            Aware.setSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT, 5000);
         }
 
         //Activate programmatically any sensors/plugins you need here
@@ -76,7 +91,10 @@ public class Plugin extends Aware_Plugin {
     public void onDestroy() {
         super.onDestroy();
 
-        Aware.setSetting(this, Settings.STATUS_PLUGIN_TEMPLATE, false);
+        Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, false);
+
+        // Unregister app change listener
+        unregisterReceiver(acl);
 
         //Deactivate any sensors/plugins you activated here
         //e.g., Aware.setSetting(this, Aware_Preferences.STATUS_ACCELEROMETER, false);
