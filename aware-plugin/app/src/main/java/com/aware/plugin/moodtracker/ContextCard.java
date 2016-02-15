@@ -115,13 +115,19 @@ public class ContextCard implements IContextCard {
         // nextInt: [0,n)
         //barEntries.add(new Entry(new Random().nextInt(7), i));
 
-        //Get data from database, only need data from this month, also filter records with -1 as happiness value
-        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
+        //Get data from database, only need data from this month, also filter records with -1 as happiness value. 0 - 1
+        /*Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
                 new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },
                 Provider.Moodtracker_Data.HAPPINESS_VALUE  + " != -1 and " + Provider.Moodtracker_Data.TIMESTAMP + " >= " + myDate.getMonthStartTime()
-                    + " and " + Provider.Moodtracker_Data.TIMESTAMP + " < " + myDate.getMonthEndTime(), null, null);
+                    + " and " + Provider.Moodtracker_Data.TIMESTAMP + " < " + myDate.getMonthEndTime(), null, null);*/
+        //Get data of ESM values
+        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI,
+                new String[] {Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE},
+                    Provider.Moodtracker_Data.TRIGGER + " == \"ESMHAPPINESS\" and "
+                    + Provider.Moodtracker_Data.TIMESTAMP + " >= " + myDate.getMonthStartTime() + " and "
+                    + Provider.Moodtracker_Data.TIMESTAMP + " < " + myDate.getMonthEndTime(), null, null);
 
-        //Process data first
+        //Process data first. 0, 1, 2, 3, 4, 5, 6
         HashMap<Integer, HappinessObject> mDayHappiness = new HashMap<>();
         if (cursor != null && cursor.moveToFirst()) {
             do {
