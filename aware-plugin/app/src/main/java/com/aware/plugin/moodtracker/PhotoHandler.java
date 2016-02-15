@@ -40,6 +40,12 @@ public class PhotoHandler implements Camera.PictureCallback {
         this.intent = intent;
     }
 
+    /**
+     * Function to rotate bitmap images
+     * @param bitmap image to be rotated
+     * @param degree amount of degrees the image will be rotated
+     * @return Bitmap rotated image
+     */
     public static Bitmap rotate(Bitmap bitmap, int degree) {
         int w = bitmap.getWidth();
         int h = bitmap.getHeight();
@@ -50,59 +56,47 @@ public class PhotoHandler implements Camera.PictureCallback {
         return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
     }
 
+    /**
+     * Run after picture is taken. Function rotates the image and analyses it using Google Mobile
+     * Vision API smile analysis. Happiness is saved to the database along with the app that
+     * triggered the process.
+     * @param data image data
+     * @param camera camera used
+     */
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
+        // Release the camera
         camera.release();
-        Log.i(Plugin.TAG, "Saving a bitmap to file");
 
         Bitmap bitmap = null;
 
-        if (data != null) {
-            Bitmap originalBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            int angleToRotate = CommonMethods.getRotationAngle(context, Camera.CameraInfo.CAMERA_FACING_FRONT);
-            // Solve image inverting problem
-            angleToRotate = angleToRotate + 180;
-            bitmap = rotate(originalBitmap, angleToRotate);
-            if (bitmap != null) {
-                File file = new File(Environment.getExternalStorageDirectory() + "/dirr");
-                if (!file.isDirectory()) {
-                    file.mkdir();
-                }
+        if (data == null) return;
 
-                file = new File(Environment.getExternalStorageDirectory() + "/dirr", System.currentTimeMillis() + ".jpg");
+        Bitmap originalBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+        int angleToRotate = CommonMethods.getRotationAngle(context);
+        // Solve image inverting problem
+        angleToRotate = angleToRotate + 180;
+        bitmap = rotate(originalBitmap, angleToRotate);
+        originalBitmap.recycle();
 
+        //saveImage(bitmap);
 
-                try {
-                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-
-                    fileOutputStream.flush();
-                    fileOutputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                }
-
-            }
-        }
-        photoFrameAsBmb = BitmapFactory.decodeByteArray(
-                data, 0, data.length);
-
+        // Set Mobile vision API frame
         Frame frame = new Frame.Builder()
                 .setBitmap(bitmap)
                 .build();
 
+        // Set up detector
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setTrackingEnabled(false)
- //               .setLandmarkType(FaceDetector.ALL_LANDMARKS)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
                 .setProminentFaceOnly(true)
                 .build();
 
-
+        // Get faces
         SparseArray<Face> faces = detector.detect(frame);
         detector.release();
+        bitmap.recycle();
 
         if (!detector.isOperational()) {
             Log.w(Plugin.TAG, "Face detector dependencies are not yet available.");
@@ -116,25 +110,79 @@ public class PhotoHandler implements Camera.PictureCallback {
                 Log.w(Plugin.TAG, "Low storage, cannot download library");
             }
         }
-        //Log.w(Plugin.TAG, Float.toString(faces.get(0).getIsSmilingProbability()));
-        for (int i = 0; i < faces.size(); ++i) {
-            Face face = faces.valueAt(i);
-            Log.w(Plugin.TAG, Float.toString(face.getIsSmilingProbability()));
-            ContentValues new_data = new ContentValues();
-            new_data.put(Provider.Moodtracker_Data.DEVICE_ID, Aware.getSetting(context.getApplicationContext(), Aware_Preferences.DEVICE_ID));
-            new_data.put(Provider.Moodtracker_Data.TIMESTAMP, System.currentTimeMillis());
-            new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, face.getIsSmilingProbability());
-            new_data.put(Provider.Moodtracker_Data.TRIGGER, intent.getExtras().getString("AppName"));
+        saveHappinessData(faces);
+    }
 
-            //Insert the data to the ContentProvider
-            context.getContentResolver().insert(Provider.Moodtracker_Data.CONTENT_URI, new_data);
-                    String[] tableColumns = new String[] {
-                null
-        };
-        // For debug
-        Cursor cursor = context.getContentResolver().query(Provider.Moodtracker_Data.CONTENT_URI, new String[] { Provider.Moodtracker_Data.TIMESTAMP, Provider.Moodtracker_Data.HAPPINESS_VALUE },null, null, null);
-        if(cursor.moveToFirst()) { Toast.makeText(context, cursor.getString(0) + " " + cursor.getString(1), Toast.LENGTH_SHORT).show(); }
-        cursor.close();
+    /**
+     * Function for saving happiness data to db. Although there should be only one face, function
+     * loops through the whole array.
+     * @param faces detected faces
+     */
+    private void saveHappinessData(SparseArray<Face> faces) {
+        // Loop through faces (there should be only one)
+        if (faces.size() != 0) {
+            for (int i = 0; i < faces.size(); ++i) {
+                Face face = faces.valueAt(i);
+                newHappinessValue(face.getIsSmilingProbability());
+                // For debug
+                /*Cursor cursor = context.getContentResolver()
+                        .query(Provider.Moodtracker_Data.CONTENT_URI,
+                                new String[] { Provider.Moodtracker_Data.TIMESTAMP,
+                                        Provider.Moodtracker_Data.HAPPINESS_VALUE },
+                                null,
+                                null,
+                                null);
+                if(cursor.moveToFirst()) { Toast.makeText(context,
+                        cursor.getString(0) + " " + cursor.getString(1),
+                        Toast.LENGTH_SHORT).show(); }
+                cursor.close();*/
+            }
+        } else {
+            newHappinessValue(Face.UNCOMPUTED_PROBABILITY);
+        }
+    }
+
+    /**
+     * Function to save new happiness line to db
+     * @param happiness
+     */
+    private void newHappinessValue(float happiness) {
+        ContentValues new_data = new ContentValues();
+        new_data.put(Provider.Moodtracker_Data.DEVICE_ID,
+                Aware.getSetting(context.getApplicationContext(), Aware_Preferences.DEVICE_ID));
+        new_data.put(Provider.Moodtracker_Data.TIMESTAMP,
+                System.currentTimeMillis());
+        new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE,
+                happiness);
+        new_data.put(Provider.Moodtracker_Data.TRIGGER,
+                intent.getExtras().getString("AppName"));
+
+        //Insert the data to the ContentProvider
+        context.getContentResolver().insert(Provider.Moodtracker_Data.CONTENT_URI, new_data);
+    }
+
+    /**
+     * Function to save bitmap to disk. Should not be used in production.
+     * @param bitmap
+     */
+    private void saveImage(Bitmap bitmap) {
+        File file = new File(Environment.getExternalStorageDirectory() + "/dir");
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
+
+        file = new File(Environment.getExternalStorageDirectory() + "/dir", System.currentTimeMillis() + ".jpg");
+
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 }
