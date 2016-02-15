@@ -103,7 +103,7 @@ public class Plugin extends Aware_Plugin {
             try {
                 schedule.setTimer(c)
                         .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
-                        .setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
+                        .setActionClass("com.aware.plugin.moodtracker.EsmQuestionnaire");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -119,7 +119,7 @@ public class Plugin extends Aware_Plugin {
                         .addHour(17)
                         .addHour(21)
                         .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
-                        .setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
+                        .setActionClass("com.aware.plugin.moodtracker.EsmQuestionnaire");
 
                 Scheduler.saveSchedule(getApplicationContext(), schedule);
 
