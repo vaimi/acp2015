@@ -27,7 +27,7 @@
             android:src="@drawable/sad"
             android:id="@+id/sadimage"
             android:gravity="left"
-            android:layout_weight="1"/>
+            android:layout_weight="0"/>
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -41,13 +41,13 @@
             android:src="@drawable/happy"
             android:id="@+id/happyimage"
             android:gravity="right"
-            android:layout_weight="1"/>
+            android:layout_weight="0"/>
 
     </LinearLayout>
 
     <SeekBar
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="30dp"
         android:id="@+id/seekBar"
         android:layout_below="@+id/smileys"
         android:layout_marginTop="40dp"
@@ -56,7 +56,73 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:indeterminate="false"
+        android:progressDrawable="@layout/progressbar"
+        android:thumb="@drawable/seekbarthumb"
         />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/seekbarvalues"
+        android:layout_below="@id/seekBar"
+        android:paddingTop="5dp">
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/verysad"
+            android:gravity="left"
+            android:layout_weight="0"
+            android:text="Very \n sad"/>
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/neutral"
+            android:gravity="center"
+            android:layout_weight="1.5"
+            android:text="Neutral"/>
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/veryhappy"
+            android:gravity="right"
+            android:layout_weight="0"
+            android:text="Very \n happy"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/buttons"
+        android:layout_below="@id/seekbarvalues"
+        android:paddingTop="50dp">
+
+        <Button
+            android:id="@+id/asklaterbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:text="Ask later"
+            android:background="#73a1eb"
+            android:shadowColor="#507dd8"
+            android:textColor="#ffffff"
+            android:layout_marginRight="2dp"/>
+
+        <Button
+            android:id="@+id/submitbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:text="SUBMIT"
+            android:background="#4abb61"
+            android:textColor="#ffffff"
+            android:layout_marginLeft="2dp"
+            android:shadowColor="#4cbd64"/>
+
+    </LinearLayout>
 
 
 </RelativeLayout>
