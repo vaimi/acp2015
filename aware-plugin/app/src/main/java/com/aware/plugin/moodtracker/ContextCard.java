@@ -127,13 +127,13 @@ public class ContextCard implements IContextCard {
                     + Provider.Moodtracker_Data.TIMESTAMP + " >= " + myDate.getMonthStartTime() + " and "
                     + Provider.Moodtracker_Data.TIMESTAMP + " < " + myDate.getMonthEndTime(), null, null);
 
-        //Process data first. 0, 1, 2, 3, 4, 5, 6
+        //Process data first. 0, 20, 40, 60, 80, 100, 120 (They are 20 times than exact value)
         HashMap<Integer, HappinessObject> mDayHappiness = new HashMap<>();
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Log.d("AWARE", "" + cursor.getLong(0) + " " + cursor.getDouble(1));
                 long timestamp = cursor.getLong(0);
-                double happiness = cursor.getDouble(1);
+                double happiness = cursor.getDouble(1) * 1.0 / 20;
 
                 int day = MyDate.toDay(timestamp);
                 Log.d("AWARE", "" + day);
