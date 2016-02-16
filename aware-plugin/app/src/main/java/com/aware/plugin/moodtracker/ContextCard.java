@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aware.Aware;
 import com.aware.providers.Applications_Provider;
 import com.aware.ui.Stream_UI;
 import com.aware.utils.IContextCard;
@@ -46,6 +47,10 @@ public class ContextCard implements IContextCard {
 
     @Override
     public View getContextCard(final Context context) {
+        if (!Aware.getSetting(context, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD).equals("true")) {
+            return null;
+        }
+
         LayoutInflater sInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View card = sInflater.inflate(R.layout.card, null);
         final LinearLayout chart = (LinearLayout) card.findViewById(R.id.chart);
@@ -136,7 +141,7 @@ public class ContextCard implements IContextCard {
             do {
                 //Log.d("AWARE", "" + cursor.getLong(0) + " " + cursor.getDouble(1));
                 long timestamp = cursor.getLong(0);
-                double happiness = cursor.getDouble(1) * 1.0 / 20;
+                double happiness = (double)cursor.getDouble(1)/20;
 
                 int day = MyDate.toDay(timestamp);
                 //Log.d("AWARE", "" + day);
@@ -172,6 +177,7 @@ public class ContextCard implements IContextCard {
 
         LineChart mChart = new LineChart(context);
 
+        mChart.getLegend().setEnabled(false);
         mChart.setContentDescription("");
         mChart.setDescription("");
         //Dynamically stretch the chart to a reasonable height for viewing's sake
