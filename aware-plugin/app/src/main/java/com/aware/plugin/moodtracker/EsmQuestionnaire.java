@@ -56,7 +56,7 @@ public class EsmQuestionnaire extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 moodValue = seekBar.getProgress();
-                Log.d("Seek bar", moodValue + "");
+                //Log.d("Seek bar", moodValue + "");
 
                 progress = ((int) Math.round(progress / stepSize)) * stepSize;
                 seekBar.setProgress(progress);
@@ -89,7 +89,7 @@ public class EsmQuestionnaire extends Activity {
                         .getContentResolver()
                         .insert(Provider.Moodtracker_Data.CONTENT_URI, new_data);
 
-                Log.d("submit", "pressed");
+                if (Plugin.DEBUG) Log.d("submit", "pressed");
                 Intent cameraIntent = new Intent(getApplicationContext(), CameraActivity.class);
                 startActivity(cameraIntent);
                 //editor.putBoolean("Delayed", DELAYED);
@@ -108,7 +108,7 @@ public class EsmQuestionnaire extends Activity {
     }
 
     private void remindLater(){
-        Log.d("delay", "pressed");
+        if (Plugin.DEBUG) Log.d("delay", "pressed");
         DELAYED = true;
         editor = prefs.edit();
         editor.putBoolean("Delayed", DELAYED);
@@ -122,10 +122,9 @@ public class EsmQuestionnaire extends Activity {
         // start ESMQuestionnaire activity in 5 min
         Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_reminder");
         long time = Calendar.getInstance().getTimeInMillis();
-        long timeToRemind = time + 30000;
+        long timeToRemind = time + 300000;
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(timeToRemind);
-        Log.d(Plugin.TAG, c.toString());
         try {
             schedule.setTimer(c)
                     .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
@@ -135,7 +134,7 @@ public class EsmQuestionnaire extends Activity {
         }
 
         Scheduler.saveSchedule(getApplicationContext(), schedule);
-        Log.d("AWARE", "Rescheduled");
+        if (Plugin.DEBUG) Log.d(Plugin.TAG, "Esm Rescheduled");
     }
 
 

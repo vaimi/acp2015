@@ -90,6 +90,7 @@ public class FacePhoto extends Service {
 
         if (lastApp != null) {
             // Check that app on front haven't changed
+            if (intent == null) return;
             if (lastApp.equals(intent.getExtras().getString("AppName"))) {
                 // Prepare camera
                 if (prepareCamera()) {

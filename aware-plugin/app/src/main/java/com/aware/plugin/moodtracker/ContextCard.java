@@ -164,7 +164,7 @@ public class ContextCard implements IContextCard {
         for (Map.Entry<Integer, HappinessObject> entry: mDayHappiness.entrySet()) {
             Integer day = entry.getKey();
             Double happiness = entry.getValue().getValue();
-            Log.d("AWARE", "ESM happiness value:" + Float.parseFloat("" + happiness) + " Day:" + day);
+            //Log.d("AWARE", "ESM happiness value:" + Float.parseFloat("" + happiness) + " Day:" + day);
             //second param of Entry starting from 0, and our day variable counts from 1
             barEntries.add(new Entry(Float.parseFloat("" + happiness), day - 1));
         }
