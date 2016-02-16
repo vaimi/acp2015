@@ -33,7 +33,6 @@ public class EsmQuestionnaire extends Activity {
     private Button submitbtn;
     private SharedPreferences prefs;
     public static final String MyPREFERENCES = "MyPrefs" ;
-    public static Boolean DELAYED = false;
     SharedPreferences.Editor editor;
 
 
@@ -86,9 +85,7 @@ public class EsmQuestionnaire extends Activity {
                 new_data.put(Provider.Moodtracker_Data.TIMESTAMP, System.currentTimeMillis());
                 new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, moodValue);
                 new_data.put(Provider.Moodtracker_Data.TRIGGER, "ESMHAPPINESS");
-                Log.d("submit", "pressed");
-                editor = prefs.edit();
-                editor.putBoolean("Delayed", DELAYED);
+
                 finish();
 
             }
@@ -104,11 +101,6 @@ public class EsmQuestionnaire extends Activity {
     }
 
     private void remindLater(){
-        Log.d("delay", "pressed");
-//        DELAYED = true;
-//        editor = prefs.edit();
-//        editor.putBoolean("Delayed", DELAYED);
-//        editor.commit();
 
 
         Intent myIntent = new Intent(getApplicationContext(), MyReceiver.class);

@@ -26,19 +26,10 @@ import java.util.jar.Manifest;
 
 public class Plugin extends Aware_Plugin {
     private static AppChangeListener acl = new AppChangeListener();
-    private SharedPreferences prefs;
-    public boolean delayed;
-
-    public static final String MyPREFERENCES = "MyPrefs" ;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        prefs = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        //delayed = prefs.getBoolean("DELAYED", false);
-
-        delayed = EsmQuestionnaire.DELAYED;
 
         TAG = "AWARE::"+getResources().getString(R.string.app_name);
         DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
