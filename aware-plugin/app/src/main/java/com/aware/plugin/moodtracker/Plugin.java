@@ -87,24 +87,22 @@ public class Plugin extends Aware_Plugin {
         DATABASE_TABLES = Provider.DATABASE_TABLES;
         TABLES_FIELDS = Provider.TABLES_FIELDS;
         CONTEXT_URIS = new Uri[]{ Provider.Moodtracker_Data.CONTENT_URI };
-
+        Scheduler.removeSchedule(getApplicationContext(), "schedule_master");
         //Activate plugin
         Aware.startPlugin(this, "com.aware.plugin.moodtracker");
-
         try{
-
-            Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_reminder");
+            Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_master");
             schedule.addHour(19) //0-23
-                    .addHour(13)
+                    .addHour(14)
                     .addHour(17)
                     .addHour(21)
                     .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
-                    .setActionClass("com.aware.plugin.moodtracker.EsmQuestionnaire");
+                    .setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
 
             Scheduler.saveSchedule(getApplicationContext(), schedule);
 
             //to remove
-            //Scheduler.removeSchedule(getApplicationContext(), "schedule_id");
+            //
 
         } catch (JSONException e) {
             e.printStackTrace();

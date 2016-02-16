@@ -114,16 +114,17 @@ public class EsmQuestionnaire extends Activity {
         editor.putBoolean("Delayed", DELAYED);
         editor.commit();
         scheduleReminder();
-        moveTaskToBack(true);
+        finish();
     }
 
     private void scheduleReminder() {
+        Scheduler.removeSchedule(getApplicationContext(), "schedule_reminder");
         // start ESMQuestionnaire activity in 5 min
-        Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_id");
+        Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_reminder");
         long time = Calendar.getInstance().getTimeInMillis();
-        long timeToRemind = time + 300000;
+        long timeToRemind = time + 30000;
         Calendar c = Calendar.getInstance();
-
+        Log.d(Plugin.TAG, c.toString());
         c.setTimeInMillis(timeToRemind);
         try {
             schedule.setTimer(c)
