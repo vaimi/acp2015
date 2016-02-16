@@ -4,6 +4,7 @@
     package="com.aware.plugin.moodtracker">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.camera" />
@@ -43,8 +44,16 @@
             android:readPermission="com.aware.READ_CONTEXT_DATA"
             android:writePermission="com.aware.WRITE_CONTEXT_DATA" />
 
+        <activity android:name=".EsmQuestionnaire" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".CameraActivity" >
         </activity>
+
+        <receiver android:name=".MyReceiver" />
     </application>
 
 </manifest>

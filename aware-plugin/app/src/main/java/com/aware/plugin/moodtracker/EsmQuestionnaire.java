@@ -1,6 +1,8 @@
 package com.aware.plugin.moodtracker;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +33,6 @@ public class EsmQuestionnaire extends Activity {
     private Button submitbtn;
     private SharedPreferences prefs;
     public static final String MyPREFERENCES = "MyPrefs" ;
-    public static Boolean DELAYED = false;
     SharedPreferences.Editor editor;
 
 
@@ -84,6 +85,7 @@ public class EsmQuestionnaire extends Activity {
                 new_data.put(Provider.Moodtracker_Data.TIMESTAMP, System.currentTimeMillis());
                 new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, moodValue);
                 new_data.put(Provider.Moodtracker_Data.TRIGGER, "ESMHAPPINESS");
+
                 //Insert the data to the ContentProvider
                 getApplicationContext()
                         .getContentResolver()
@@ -108,12 +110,22 @@ public class EsmQuestionnaire extends Activity {
     }
 
     private void remindLater(){
+<<<<<<< HEAD
         if (Plugin.DEBUG) Log.d("delay", "pressed");
         DELAYED = true;
         editor = prefs.edit();
         editor.putBoolean("Delayed", DELAYED);
         editor.commit();
         scheduleReminder();
+=======
+
+
+        Intent myIntent = new Intent(getApplicationContext(), MyReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, 0);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 300000, pendingIntent);
+
+>>>>>>> master
         finish();
     }
 
@@ -136,7 +148,6 @@ public class EsmQuestionnaire extends Activity {
         Scheduler.saveSchedule(getApplicationContext(), schedule);
         if (Plugin.DEBUG) Log.d(Plugin.TAG, "Esm Rescheduled");
     }
-
 
 
 }
