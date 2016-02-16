@@ -84,6 +84,11 @@ public class EsmQuestionnaire extends Activity {
                 new_data.put(Provider.Moodtracker_Data.TIMESTAMP, System.currentTimeMillis());
                 new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, moodValue);
                 new_data.put(Provider.Moodtracker_Data.TRIGGER, "ESMHAPPINESS");
+                //Insert the data to the ContentProvider
+                getApplicationContext()
+                        .getContentResolver()
+                        .insert(Provider.Moodtracker_Data.CONTENT_URI, new_data);
+
                 Log.d("submit", "pressed");
                 Intent cameraIntent = new Intent(getApplicationContext(), CameraActivity.class);
                 startActivity(cameraIntent);
