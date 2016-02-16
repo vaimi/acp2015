@@ -26,11 +26,6 @@ import java.util.jar.Manifest;
 
 public class Plugin extends Aware_Plugin {
     private static AppChangeListener acl = new AppChangeListener();
-<<<<<<< HEAD
-    private SharedPreferences prefs;
-    public static final String MyPREFERENCES = "MyPrefs" ;
-=======
->>>>>>> master
 
     @Override
     public void onCreate() {

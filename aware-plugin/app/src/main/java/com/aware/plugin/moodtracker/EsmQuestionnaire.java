@@ -110,22 +110,17 @@ public class EsmQuestionnaire extends Activity {
     }
 
     private void remindLater(){
-<<<<<<< HEAD
         if (Plugin.DEBUG) Log.d("delay", "pressed");
-        DELAYED = true;
         editor = prefs.edit();
-        editor.putBoolean("Delayed", DELAYED);
         editor.commit();
         scheduleReminder();
-=======
 
-
+        /*
         Intent myIntent = new Intent(getApplicationContext(), MyReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, 0);
         AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 300000, pendingIntent);
-
->>>>>>> master
+        */
         finish();
     }
 
