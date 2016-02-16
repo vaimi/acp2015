@@ -124,8 +124,8 @@ public class EsmQuestionnaire extends Activity {
         long time = Calendar.getInstance().getTimeInMillis();
         long timeToRemind = time + 30000;
         Calendar c = Calendar.getInstance();
-        Log.d(Plugin.TAG, c.toString());
         c.setTimeInMillis(timeToRemind);
+        Log.d(Plugin.TAG, c.toString());
         try {
             schedule.setTimer(c)
                     .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
