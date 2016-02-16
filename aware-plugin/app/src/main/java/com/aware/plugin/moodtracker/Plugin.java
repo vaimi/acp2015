@@ -14,6 +14,7 @@ import com.aware.utils.Scheduler;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 
 import org.json.JSONException;
 
@@ -26,6 +27,7 @@ import java.util.jar.Manifest;
 public class Plugin extends Aware_Plugin {
     private static AppChangeListener acl = new AppChangeListener();
     private SharedPreferences prefs;
+    public boolean delayed;
 
     public static final String MyPREFERENCES = "MyPrefs" ;
 
@@ -34,8 +36,9 @@ public class Plugin extends Aware_Plugin {
         super.onCreate();
 
         prefs = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        boolean delayed = prefs.getBoolean("Delayed", false);
+        //delayed = prefs.getBoolean("DELAYED", false);
 
+        delayed = EsmQuestionnaire.DELAYED;
 
         TAG = "AWARE::"+getResources().getString(R.string.app_name);
         DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
@@ -89,47 +92,9 @@ public class Plugin extends Aware_Plugin {
         TABLES_FIELDS = Provider.TABLES_FIELDS;
         CONTEXT_URIS = new Uri[]{ Provider.Moodtracker_Data.CONTENT_URI };
 
+
         //Activate plugin
         Aware.startPlugin(this, "com.aware.plugin.moodtracker");
-
-        if (delayed){
-            // start ESMQuestionnaire activity in 5 min
-            Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_id");
-            long time = Calendar.getInstance().getTimeInMillis();
-            long timeToRemind = time + 300000;
-            Calendar c = null;
-
-            c.setTimeInMillis(timeToRemind);
-            try {
-                schedule.setTimer(c)
-                        .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
-                        .setActionClass("com.aware.plugin.moodtracker.EsmQuestionnaire");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            Scheduler.saveSchedule(getApplicationContext(), schedule);
-
-        } else {
-            try{
-
-                Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_id");
-                schedule.addHour(9) //0-23
-                        .addHour(13)
-                        .addHour(17)
-                        .addHour(21)
-                        .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
-                        .setActionClass("com.aware.plugin.moodtracker.EsmQuestionnaire");
-
-                Scheduler.saveSchedule(getApplicationContext(), schedule);
-
-                //to remove
-                //Scheduler.removeSchedule(getApplicationContext(), "schedule_id");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     //This function gets called every 5 minutes by AWARE to make sure this plugin is still running.
@@ -140,6 +105,7 @@ public class Plugin extends Aware_Plugin {
         DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
         return super.onStartCommand(intent, flags, startId);
+
     }
 
     @Override
@@ -158,4 +124,73 @@ public class Plugin extends Aware_Plugin {
         //Stop plugin
         Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
     }
+
+    public  void scheduleDelayedActivity() {
+            Log.d("Niels", "schedule delay");
+            // start ESMQuestionnaire activity in 5 min
+            Scheduler.Schedule schedule = new Scheduler.Schedule("schedule2");
+            long time = Calendar.getInstance().getTimeInMillis();
+            long timeToRemind = time + 3000;
+            Calendar c = new Calendar() {
+                @Override
+                public void add(int field, int value) {
+
+                }
+
+                @Override
+                protected void computeFields() {
+
+                }
+
+                @Override
+                protected void computeTime() {
+
+                }
+
+                @Override
+                public int getGreatestMinimum(int field) {
+                    return 0;
+                }
+
+                @Override
+                public int getLeastMaximum(int field) {
+                    return 0;
+                }
+
+                @Override
+                public int getMaximum(int field) {
+                    return 0;
+                }
+
+                @Override
+                public int getMinimum(int field) {
+                    return 0;
+                }
+
+                @Override
+                public void roll(int field, boolean increment) {
+
+                }
+            };
+
+            c.setTimeInMillis(timeToRemind);
+
+            Log.d("AAAAAAAAA", "" + c.getTime());
+
+            try {
+                schedule.setTimer(c)
+                        .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
+                        .setActionClass(".com.aware.plugin.moodtracker.EsmQuestionnaire");
+
+                Log.d("BBBBBBB", "" + c.getTime());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Scheduler.saveSchedule(getApplicationContext(), schedule);
+
+
+    }
+
+
 }

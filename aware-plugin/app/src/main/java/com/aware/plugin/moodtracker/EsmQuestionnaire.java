@@ -1,8 +1,11 @@
 package com.aware.plugin.moodtracker;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +15,11 @@ import android.widget.SeekBar;
 
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
+import com.aware.utils.Scheduler;
+
+import org.json.JSONException;
+
+import java.util.Calendar;
 
 /**
  * Created by vaimi on 3.12.2015.
@@ -79,6 +87,7 @@ public class EsmQuestionnaire extends Activity {
                 new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, moodValue);
                 new_data.put(Provider.Moodtracker_Data.TRIGGER, "ESMHAPPINESS");
                 Log.d("submit", "pressed");
+                editor = prefs.edit();
                 editor.putBoolean("Delayed", DELAYED);
                 finish();
 
@@ -96,13 +105,19 @@ public class EsmQuestionnaire extends Activity {
 
     private void remindLater(){
         Log.d("delay", "pressed");
-        DELAYED = true;
-        editor = prefs.edit();
-        editor.putBoolean("Delayed", DELAYED);
-        editor.commit();
+//        DELAYED = true;
+//        editor = prefs.edit();
+//        editor.putBoolean("Delayed", DELAYED);
+//        editor.commit();
+
+
+        Intent myIntent = new Intent(getApplicationContext(), MyReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, 0);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 300000, pendingIntent);
+
         finish();
     }
-
 
 
 }
