@@ -30,6 +30,16 @@
             android:exported="true"
             android:theme="@style/Theme.Aware" />
 
+        <activity
+            android:name=".EsmQuestionnaire"
+            android:exported="true"
+            android:theme="@style/Theme.Aware">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name=".Provider"
             android:authorities="${applicationId}.provider.plugin.moodtracker"
@@ -38,10 +48,6 @@
             android:writePermission="com.aware.WRITE_CONTEXT_DATA" />
 
         <activity android:name=".CameraActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

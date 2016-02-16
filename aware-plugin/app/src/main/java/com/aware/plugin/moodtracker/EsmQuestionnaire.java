@@ -3,6 +3,7 @@ package com.aware.plugin.moodtracker;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,11 @@ import android.widget.SeekBar;
 
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
+import com.aware.utils.Scheduler;
+
+import org.json.JSONException;
+
+import java.util.Calendar;
 
 /**
  * Created by vaimi on 3.12.2015.
@@ -79,7 +85,9 @@ public class EsmQuestionnaire extends Activity {
                 new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, moodValue);
                 new_data.put(Provider.Moodtracker_Data.TRIGGER, "ESMHAPPINESS");
                 Log.d("submit", "pressed");
-                editor.putBoolean("Delayed", DELAYED);
+                Intent cameraIntent = new Intent(getApplicationContext(), CameraActivity.class);
+                startActivity(cameraIntent);
+                //editor.putBoolean("Delayed", DELAYED);
                 finish();
 
             }
@@ -100,7 +108,28 @@ public class EsmQuestionnaire extends Activity {
         editor = prefs.edit();
         editor.putBoolean("Delayed", DELAYED);
         editor.commit();
-        finish();
+        scheduleReminder();
+        moveTaskToBack(true);
+    }
+
+    private void scheduleReminder() {
+        // start ESMQuestionnaire activity in 5 min
+        Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_id");
+        long time = Calendar.getInstance().getTimeInMillis();
+        long timeToRemind = time + 300000;
+        Calendar c = Calendar.getInstance();
+
+        c.setTimeInMillis(timeToRemind);
+        try {
+            schedule.setTimer(c)
+                    .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
+                    .setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Scheduler.saveSchedule(getApplicationContext(), schedule);
+        Log.d("AWARE", "Rescheduled");
     }
 
 

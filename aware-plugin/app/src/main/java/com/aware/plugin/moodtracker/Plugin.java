@@ -26,7 +26,6 @@ import java.util.jar.Manifest;
 public class Plugin extends Aware_Plugin {
     private static AppChangeListener acl = new AppChangeListener();
     private SharedPreferences prefs;
-
     public static final String MyPREFERENCES = "MyPrefs" ;
 
     @Override
@@ -92,44 +91,25 @@ public class Plugin extends Aware_Plugin {
         //Activate plugin
         Aware.startPlugin(this, "com.aware.plugin.moodtracker");
 
-        if (delayed){
-            // start ESMQuestionnaire activity in 5 min
-            Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_id");
-            long time = Calendar.getInstance().getTimeInMillis();
-            long timeToRemind = time + 300000;
-            Calendar c = null;
+        try{
 
-            c.setTimeInMillis(timeToRemind);
-            try {
-                schedule.setTimer(c)
-                        .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
-                        .setActionClass("com.aware.plugin.moodtracker.EsmQuestionnaire");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_reminder");
+            schedule.addHour(19) //0-23
+                    .addHour(13)
+                    .addHour(17)
+                    .addHour(21)
+                    .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
+                    .setActionClass("com.aware.plugin.moodtracker.EsmQuestionnaire");
 
             Scheduler.saveSchedule(getApplicationContext(), schedule);
 
-        } else {
-            try{
+            //to remove
+            //Scheduler.removeSchedule(getApplicationContext(), "schedule_id");
 
-                Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_id");
-                schedule.addHour(9) //0-23
-                        .addHour(13)
-                        .addHour(17)
-                        .addHour(21)
-                        .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
-                        .setActionClass("com.aware.plugin.moodtracker.EsmQuestionnaire");
-
-                Scheduler.saveSchedule(getApplicationContext(), schedule);
-
-                //to remove
-                //Scheduler.removeSchedule(getApplicationContext(), "schedule_id");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
     }
 
     //This function gets called every 5 minutes by AWARE to make sure this plugin is still running.
