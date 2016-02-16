@@ -40,5 +40,4 @@ public class AppChangeListener extends BroadcastReceiver {
             Log.e(Plugin.TAG, "Unable to fetch last app");
         }
     }
-
 }

@@ -26,6 +26,11 @@ import java.util.jar.Manifest;
 
 public class Plugin extends Aware_Plugin {
     private static AppChangeListener acl = new AppChangeListener();
+<<<<<<< HEAD
+    private SharedPreferences prefs;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+=======
+>>>>>>> master
 
     @Override
     public void onCreate() {
@@ -82,10 +87,26 @@ public class Plugin extends Aware_Plugin {
         DATABASE_TABLES = Provider.DATABASE_TABLES;
         TABLES_FIELDS = Provider.TABLES_FIELDS;
         CONTEXT_URIS = new Uri[]{ Provider.Moodtracker_Data.CONTENT_URI };
-
-
+        Scheduler.removeSchedule(getApplicationContext(), "schedule_master");
         //Activate plugin
         Aware.startPlugin(this, "com.aware.plugin.moodtracker");
+        try{
+            Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_master");
+            schedule.addHour(19) //0-23
+                    .addHour(14)
+                    .addHour(17)
+                    .addHour(21)
+                    .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
+                    .setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
+
+            Scheduler.saveSchedule(getApplicationContext(), schedule);
+
+            //to remove
+            //
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     //This function gets called every 5 minutes by AWARE to make sure this plugin is still running.
