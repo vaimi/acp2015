@@ -9,9 +9,11 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,6 +23,7 @@ import com.aware.providers.Applications_Provider;
 import com.aware.ui.Stream_UI;
 import com.aware.utils.IContextCard;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -127,16 +130,16 @@ public class ContextCard implements IContextCard {
                     + Provider.Moodtracker_Data.TIMESTAMP + " >= " + myDate.getMonthStartTime() + " and "
                     + Provider.Moodtracker_Data.TIMESTAMP + " < " + myDate.getMonthEndTime(), null, null);
 
-        //Process data first. 0, 1, 2, 3, 4, 5, 6
+        //Process data first. 0, 20, 40, 60, 80, 100, 120
         HashMap<Integer, HappinessObject> mDayHappiness = new HashMap<>();
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                Log.d("AWARE", "" + cursor.getLong(0) + " " + cursor.getDouble(1));
+                //Log.d("AWARE", "" + cursor.getLong(0) + " " + cursor.getDouble(1));
                 long timestamp = cursor.getLong(0);
-                double happiness = cursor.getDouble(1);
+                double happiness = cursor.getDouble(1) * 1.0 / 20;
 
                 int day = MyDate.toDay(timestamp);
-                Log.d("AWARE", "" + day);
+                //Log.d("AWARE", "" + day);
                 HappinessObject happinessObject;
 
                 if (mDayHappiness.containsKey(day))   //Have already some value, need to average them
@@ -156,6 +159,7 @@ public class ContextCard implements IContextCard {
         for (Map.Entry<Integer, HappinessObject> entry: mDayHappiness.entrySet()) {
             Integer day = entry.getKey();
             Double happiness = entry.getValue().getValue();
+            Log.d("AWARE", "ESM happiness value:" + Float.parseFloat("" + happiness) + " Day:" + day);
             //second param of Entry starting from 0, and our day variable counts from 1
             barEntries.add(new Entry(Float.parseFloat("" + happiness), day - 1));
         }
@@ -170,10 +174,24 @@ public class ContextCard implements IContextCard {
 
         mChart.setContentDescription("");
         mChart.setDescription("");
-        mChart.setMinimumHeight(200);
+        //Dynamically stretch the chart to a reasonable height for viewing's sake
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+        //Usual good percentage of screen height
+        int niceHeight = (int) Math.round(metrics.heightPixels * 0.3);
+        mChart.setMinimumHeight((niceHeight > 200) ? niceHeight : 200);
+        mChart.setMinimumWidth((int)Math.round(metrics.widthPixels * 0.8));
+        
         mChart.setBackgroundColor(Color.WHITE);
         mChart.setDrawGridBackground(false);
         mChart.setDrawBorders(false);
+
+        //Modify the legend so that it won't eat too much space from chart
+        Legend legend = mChart.getLegend();
+        legend.setEnabled(false);
+
+        //TODO - MarkerView if user wants to see detailed info of certain data point
 
         YAxis left = mChart.getAxisLeft();
         left.setDrawLabels(true);
