@@ -99,10 +99,17 @@ public class FacePhoto extends Service {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            camera.takePicture(null,
-                                    null,
-                                    new PhotoHandler(getApplicationContext(), lastIntent));
-                        }
+                                try {
+                                camera.takePicture(null,
+                                        null,
+                                        new PhotoHandler(getApplicationContext(), lastIntent));
+                                } catch (Exception e) {
+                                    if (camera != null) {
+                                        camera.stopPreview();
+                                        camera.release();
+                                    }
+                                }
+                            }
                     }, previewTime);
 
                 }

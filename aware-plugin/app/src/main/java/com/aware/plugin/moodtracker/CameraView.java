@@ -37,11 +37,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback{
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         try{
             //when the surface is created, we can set the camera to draw images in this surfaceholder
-            if (!Aware.getSetting(c, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).equals("true")) {
-                mCamera.setPreviewTexture(new SurfaceTexture(0));
-            } else {
-                mCamera.setPreviewDisplay(surfaceHolder);
-            }
+            mCamera.setPreviewDisplay(surfaceHolder);
             mCamera.startPreview();
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -49,10 +45,18 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback{
                     Intent esmIntent = new Intent(c, PhotoHandler.class);
                     // Put AppName as extra to intent
                     esmIntent.putExtra("AppName", "ESM_FOLLOWUP");
-                    mCamera.takePicture(null,
-                            null,
-                            new PhotoHandler(c, esmIntent));
-                    ((CameraActivity) c).closeActivity();
+                    try {
+                        mCamera.takePicture(null,
+                                null,
+                                new PhotoHandler(c, esmIntent));
+                    } catch (Exception e) {
+                        if (mCamera != null) {
+                            mCamera.stopPreview();
+                            mCamera.release();
+                        }
+                    } finally {
+                        ((CameraActivity) c).closeActivity();
+                    }
                 }
             }, 5000);
         } catch (IOException e) {

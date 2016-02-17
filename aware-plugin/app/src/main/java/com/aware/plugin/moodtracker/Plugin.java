@@ -44,16 +44,12 @@ public class Plugin extends Aware_Plugin {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, true);
         } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD).equals("0") ) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, false);
-        } else {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, false);
         }
         if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).length() == 0 ) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, true);
         }  else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).equals("1") ) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, true);
         } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).equals("0") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, false);
-        } else {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, false);
         }
         if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).length() == 0 ) {
@@ -62,16 +58,12 @@ public class Plugin extends Aware_Plugin {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, true);
         } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).equals("0") ) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, false);
-        } else {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, false);
         }
         if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).length() == 0 ) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, true);
         } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).equals("1") ) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, true);
         } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).equals("0") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, false);
-        } else {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, false);
         }
         if( Aware.getSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT).length() == 0 ) {
@@ -114,7 +106,7 @@ public class Plugin extends Aware_Plugin {
             schedule.addHour(19) //0-23
                     .addHour(14)
                     .addHour(17)
-                    .addHour(21)
+                    .addHour(23)
                     .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
                     .setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
 

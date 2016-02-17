@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.aware.Aware;
 
+import java.io.IOException;
+
 public class CameraActivity extends Activity {
     private Camera mCamera = null;
     private CameraView mCameraView = null;
@@ -51,19 +53,29 @@ public class CameraActivity extends Activity {
         if(mCamera != null) {
             //when the surface is created, we can set the camera to draw images in this surfaceholder
             if (!Aware.getSetting(getApplicationContext(), Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).equals("true")) {
-                mCamera.startPreview();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent esmIntent = new Intent(getApplicationContext(), PhotoHandler.class);
-                        // Put AppName as extra to intent
-                        esmIntent.putExtra("AppName", "ESM_FOLLOWUP");
-                        mCamera.takePicture(null,
-                                null,
-                                new PhotoHandler(getApplicationContext(), esmIntent));
-                        closeActivity();
-                    }
-                }, 5000);
+                try {
+                    mCamera.setPreviewTexture(new SurfaceTexture(0));
+                    mCamera.startPreview();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent esmIntent = new Intent(getApplicationContext(), PhotoHandler.class);
+                            // Put AppName as extra to intent
+                            esmIntent.putExtra("AppName", "ESM_FOLLOWUP");
+                            try {
+                                mCamera.takePicture(null,
+                                        null,
+                                        new PhotoHandler(getApplicationContext(), esmIntent));
+                            } catch (Exception e) {
+                                releaseCameraAndPreview();
+                            }
+                            closeActivity();
+                        }
+                    }, 5000);
+                } catch (IOException e) {
+                    if (Plugin.DEBUG) Log.d(Plugin.TAG, "Cannot make preview, aborting");
+                    releaseCameraAndPreview();
+                }
             } else {
                 mCameraView = new CameraView(this, mCamera);//create a SurfaceView to show camera data
                 FrameLayout camera_view = (FrameLayout)findViewById(R.id.camera_view);

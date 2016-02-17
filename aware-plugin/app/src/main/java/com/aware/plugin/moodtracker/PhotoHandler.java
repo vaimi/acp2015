@@ -68,7 +68,10 @@ public class PhotoHandler implements Camera.PictureCallback {
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
         // Release the camera
-        camera.release();
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();
+        }
 
         Bitmap bitmap = null;
 
