@@ -4,9 +4,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.aware.Aware;
 
@@ -33,10 +35,10 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
 
     //Plugin settings UI elements
     private static CheckBoxPreference status;
-    private static CheckBoxPreference statusContextCard;
-    private static CheckBoxPreference statusEsm;
-    private static CheckBoxPreference statusEsmPreview;
-    private static CheckBoxPreference statusPhoto;
+    private static ListPreference statusContextCard;
+    private static ListPreference statusEsm;
+    private static ListPreference statusEsmPreview;
+    private static ListPreference statusPhoto;
     private static EditTextPreference waitTime;
 
     @Override
@@ -57,13 +59,13 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
         }
         status.setChecked(Aware.getSetting(getApplicationContext(), STATUS_PLUGIN_MOODTRACKER).equals("true"));
 
-        statusContextCard = (CheckBoxPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD);
+        statusContextCard = (ListPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD);
 
-        statusEsm = (CheckBoxPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_ESM);
+        statusEsm = (ListPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_ESM);
 
-        statusEsmPreview = (CheckBoxPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW);
+        statusEsmPreview = (ListPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW);
 
-        statusPhoto = (CheckBoxPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_PHOTO);
+        statusPhoto = (ListPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_PHOTO);
 
         waitTime = (EditTextPreference) findPreference(PLUGIN_MOODTRACKER_WAIT);
         waitTime.setText(Aware.getSetting(getApplicationContext(), PLUGIN_MOODTRACKER_WAIT));
@@ -73,27 +75,20 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        //Log.i(Plugin.TAG, "Change of setting: " + sharedPreferences.getString(key, ""));
         Preference setting = findPreference(key);
 
         if( setting.getKey().equals(STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD)) {
-            boolean is_active = sharedPreferences.getBoolean(key, false);
-            Aware.setSetting(getApplicationContext(), key, is_active);
-            statusContextCard.setChecked(is_active);
+            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "0"));
         }
         if( setting.getKey().equals(STATUS_PLUGIN_MOODTRACKER_ESM)) {
-            boolean is_active = sharedPreferences.getBoolean(key, false);
-            Aware.setSetting(getApplicationContext(), key, is_active);
-            statusEsm.setChecked(is_active);
+            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "0"));
         }
         if( setting.getKey().equals(STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW)) {
-            boolean is_active = sharedPreferences.getBoolean(key, false);
-            Aware.setSetting(getApplicationContext(), key, is_active);
-            statusEsmPreview.setChecked(is_active);
+            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "0"));
         }
         if( setting.getKey().equals(STATUS_PLUGIN_MOODTRACKER_PHOTO)) {
-            boolean is_active = sharedPreferences.getBoolean(key, false);
-            Aware.setSetting(getApplicationContext(), key, is_active);
-            statusPhoto.setChecked(is_active);
+            Aware.setSetting(getApplicationContext(), key, sharedPreferences.getString(key, "0"));
         }
         if( setting.getKey().equals(PLUGIN_MOODTRACKER_WAIT)) {
             setting.setSummary("Wait " + sharedPreferences.getString(key, "5000") + " ms after app launch");

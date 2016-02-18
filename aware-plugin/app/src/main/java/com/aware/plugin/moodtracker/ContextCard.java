@@ -47,7 +47,7 @@ public class ContextCard implements IContextCard {
 
     @Override
     public View getContextCard(final Context context) {
-        if (!Aware.getSetting(context, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD).equals("true")) {
+        if (!Aware.getSetting(context, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD).equals("1")) {
             return null;
         }
 

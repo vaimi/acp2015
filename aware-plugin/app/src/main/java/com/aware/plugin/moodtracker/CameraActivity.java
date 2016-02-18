@@ -52,7 +52,7 @@ public class CameraActivity extends Activity {
 
         if(mCamera != null) {
             //when the surface is created, we can set the camera to draw images in this surfaceholder
-            if (!Aware.getSetting(getApplicationContext(), Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).equals("true")) {
+            if (!Aware.getSetting(getApplicationContext(), Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).equals("1")) {
                 try {
                     mCamera.setPreviewTexture(new SurfaceTexture(0));
                     mCamera.startPreview();

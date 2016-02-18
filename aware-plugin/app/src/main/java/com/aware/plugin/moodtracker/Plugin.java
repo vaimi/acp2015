@@ -39,35 +39,19 @@ public class Plugin extends Aware_Plugin {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, true);
         }
         if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD).length() == 0 ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, true);
-        } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD).equals("1") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, true);
-        } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD).equals("0") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, false);
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, "1");
         }
         if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).length() == 0 ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, true);
-        }  else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).equals("1") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, true);
-        } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).equals("0") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, false);
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, "1");
         }
         if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).length() == 0 ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, true);
-        } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).equals("1") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, true);
-        } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).equals("0") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, false);
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, "1");
         }
         if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).length() == 0 ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, true);
-        } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).equals("1") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, true);
-        } else if ( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).equals("0") ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, false);
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, "1");
         }
         if( Aware.getSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT).length() == 0 ) {
-            Aware.setSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT, 5000);
+            Aware.setSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT, "5000");
         }
 
         //Activate programmatically any sensors/plugins you need here
@@ -104,7 +88,7 @@ public class Plugin extends Aware_Plugin {
         try{
             Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_master");
             schedule.addHour(19) //0-23
-                    .addHour(14)
+                    .addHour(21)
                     .addHour(17)
                     .addHour(23)
                     .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
@@ -148,7 +132,7 @@ public class Plugin extends Aware_Plugin {
         Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
     }
 
-    public  void scheduleDelayedActivity() {
+    public void scheduleDelayedActivity() {
             Log.d("Niels", "schedule delay");
             // start ESMQuestionnaire activity in 5 min
             Scheduler.Schedule schedule = new Scheduler.Schedule("schedule2");

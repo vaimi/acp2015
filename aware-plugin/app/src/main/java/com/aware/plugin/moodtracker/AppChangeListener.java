@@ -23,7 +23,7 @@ public class AppChangeListener extends BroadcastReceiver {
         this.context = c;
 
         // Check that photo analysis is checked
-        if (!Aware.getSetting(c, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).equals("true")) {
+        if (!Aware.getSetting(c, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).equals("1")) {
             return;
         }
 

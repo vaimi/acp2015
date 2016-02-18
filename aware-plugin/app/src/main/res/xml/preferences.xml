@@ -14,37 +14,39 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <CheckBoxPreference
+    <ListPreference
         android:key="status_plugin_moodtracker_esm"
         android:title="ESM questionnaires"
-        android:defaultValue="true"
-        android:persistent="true"
+        android:entries="@array/listentries"
+        android:entryValues="@array/listvalues"
         android:summary="Activate/deactivate ESM"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
-    <CheckBoxPreference
+    <ListPreference
         android:key="status_plugin_moodtracker_esm_preview"
         android:title="ESM camera preview"
-        android:defaultValue="true"
+        android:entries="@array/listentries"
+        android:entryValues="@array/listvalues"
         android:persistent="true"
         android:summary="Activate/deactivate ESM preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <CheckBoxPreference
+    <ListPreference
         android:key="status_plugin_moodtracker_photo"
         android:title="Photo analysis"
-        android:defaultValue="true"
+        android:entries="@array/listentries"
+        android:entryValues="@array/listvalues"
         android:persistent="true"
         android:summary="Activate/deactivate photo analysis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <CheckBoxPreference
+    <ListPreference
         android:key="status_plugin_moodtracker_contextcard"
         android:title="Context card"
-        android:defaultValue="true"
+        android:entries="@array/listentries"
+        android:entryValues="@array/listvalues"
         android:persistent="true"
         android:summary="Show/Hide context card"
         android:layout_width="wrap_content"
@@ -52,6 +54,7 @@
 
     <EditTextPreference
         android:defaultValue="5000"
+        android:inputType="number"
         android:title="Wait before photo"
         android:key="plugin_moodtracker_wait"
         android:persistent="true"
