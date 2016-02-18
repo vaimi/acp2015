@@ -81,8 +81,12 @@ public class FacePhoto extends Service {
         }
 
         // Wait before taking the photo.
-        int waitTime = Integer.valueOf(Aware.getSetting(getApplicationContext(),
-                Settings.PLUGIN_MOODTRACKER_WAIT));
+        String waitTimeString = Aware.getSetting(getApplicationContext(),
+                Settings.PLUGIN_MOODTRACKER_WAIT);
+        int waitTime = 5000;
+        if (waitTimeString != "" && waitTimeString.matches("^\\d+$")) {
+            waitTime = Integer.valueOf(waitTimeString);
+        }
         SystemClock.sleep(waitTime);
 
         // Get last app
