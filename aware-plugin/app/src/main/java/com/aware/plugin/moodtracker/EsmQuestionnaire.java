@@ -3,6 +3,7 @@ package com.aware.plugin.moodtracker;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,8 @@ import java.util.Calendar;
 /**
  * Created by vaimi on 3.12.2015.
  */
+
+
 public class EsmQuestionnaire extends Activity {
 
     private SeekBar seekBar;
@@ -134,8 +137,9 @@ public class EsmQuestionnaire extends Activity {
         c.setTimeInMillis(timeToRemind);
         try {
             schedule.setTimer(c)
-                    .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
-                    .setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
+                    .setActionType(Scheduler.ACTION_TYPE_BROADCAST)
+                    .setActionClass("com.aware.plugin.moodtracker.esm.launch");
+                    //.setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
         } catch (JSONException e) {
             e.printStackTrace();
         }

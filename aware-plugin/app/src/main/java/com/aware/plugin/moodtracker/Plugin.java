@@ -26,6 +26,7 @@ import java.util.jar.Manifest;
 
 public class Plugin extends Aware_Plugin {
     private static AppChangeListener acl = new AppChangeListener();
+    private static EsmListener esml = new EsmListener();
 
     @Override
     public void onCreate() {
@@ -66,6 +67,10 @@ public class Plugin extends Aware_Plugin {
         broadcastFilter.addAction(Applications.ACTION_AWARE_APPLICATIONS_FOREGROUND);
         registerReceiver(acl, broadcastFilter);
 
+        IntentFilter esmFilter = new IntentFilter();
+        esmFilter.addAction("com.aware.plugin.moodtracker.esm.launch");
+        registerReceiver(esml, esmFilter);
+
         //Any active plugin/sensor shares its overall context using broadcasts
         CONTEXT_PRODUCER = new ContextProducer() {
             @Override
@@ -90,9 +95,11 @@ public class Plugin extends Aware_Plugin {
             schedule.addHour(19) //0-23
                     .addHour(21)
                     .addHour(17)
-                    .addHour(22)
-                    .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
-                    .setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
+                    .addHour(23)
+                    .setActionType(Scheduler.ACTION_TYPE_BROADCAST)
+                    .setActionClass("com.aware.plugin.moodtracker.esm.launch");
+                    //.setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
+                    //.setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
 
             Scheduler.saveSchedule(getApplicationContext(), schedule);
 
@@ -123,6 +130,7 @@ public class Plugin extends Aware_Plugin {
 
         // Unregister app change listener
         unregisterReceiver(acl);
+        unregisterReceiver(esml);
 
         //Deactivate any sensors/plugins you activated here
         //e.g., Aware.setSetting(this, Aware_Preferences.STATUS_ACCELEROMETER, false);
@@ -132,7 +140,7 @@ public class Plugin extends Aware_Plugin {
         Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
     }
 
-    public void scheduleDelayedActivity() {
+    /*public void scheduleDelayedActivity() {
             Log.d("Niels", "schedule delay");
             // start ESMQuestionnaire activity in 5 min
             Scheduler.Schedule schedule = new Scheduler.Schedule("schedule2");
@@ -197,7 +205,7 @@ public class Plugin extends Aware_Plugin {
             Scheduler.saveSchedule(getApplicationContext(), schedule);
 
 
-    }
+    }*/
 
 
 }
