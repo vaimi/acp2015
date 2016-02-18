@@ -90,7 +90,7 @@ public class Plugin extends Aware_Plugin {
             schedule.addHour(19) //0-23
                     .addHour(21)
                     .addHour(17)
-                    .addHour(23)
+                    .addHour(22)
                     .setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
                     .setActionClass("com.aware.plugin.moodtracker/com.aware.plugin.moodtracker.EsmQuestionnaire");
 

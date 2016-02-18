@@ -82,7 +82,6 @@ public class PhotoHandler implements Camera.PictureCallback {
         // Solve image inverting problem
         angleToRotate = angleToRotate + 180;
         bitmap = rotate(originalBitmap, angleToRotate);
-        originalBitmap.recycle();
 
         //saveImage(bitmap);
 
@@ -102,6 +101,7 @@ public class PhotoHandler implements Camera.PictureCallback {
         SparseArray<Face> faces = detector.detect(frame);
         detector.release();
         bitmap.recycle();
+        originalBitmap.recycle();
 
         if (!detector.isOperational()) {
             Log.w(Plugin.TAG, "Face detector dependencies are not yet available.");
