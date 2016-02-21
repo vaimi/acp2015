@@ -6,6 +6,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -49,6 +50,17 @@ public class CameraActivity extends Activity {
         } catch (Exception e){
             if (Plugin.DEBUG) Log.d(Plugin.TAG, "Failed to get camera: " + e.getMessage());
         }
+        if (mCamera == null) {
+            SystemClock.sleep(500);
+            if (Plugin.DEBUG) Log.d(Plugin.TAG, "Retrying");
+            try{
+                releaseCameraAndPreview();
+                mCamera = Camera.open(CommonMethods.getFrontCameraId());
+            } catch (Exception e2) {
+                if (Plugin.DEBUG) Log.d(Plugin.TAG, "Also 2nd try failed");
+                closeActivity();
+            }
+        }
 
         if(mCamera != null) {
             //when the surface is created, we can set the camera to draw images in this surfaceholder
@@ -75,6 +87,7 @@ public class CameraActivity extends Activity {
                 } catch (IOException e) {
                     if (Plugin.DEBUG) Log.d(Plugin.TAG, "Cannot make preview, aborting");
                     releaseCameraAndPreview();
+                    closeActivity();
                 }
             } else {
                 mCameraView = new CameraView(this, mCamera);//create a SurfaceView to show camera data

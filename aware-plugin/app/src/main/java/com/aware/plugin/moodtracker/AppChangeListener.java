@@ -29,7 +29,7 @@ public class AppChangeListener extends BroadcastReceiver {
 
         String lastApp = CommonMethods.getLastApp(context);
         if (lastApp != null) {
-            if (lastApp.equals("com.aware.plugin.moodtracker")) return;
+            if (lastApp.equals("com.aware.plugin.moodtracker") || lastApp.equals("com.android.systemui")) return;
             if (Plugin.DEBUG) Log.d(Plugin.TAG, "New app on foreground " + lastApp);
             Intent appIntent = new Intent(context, FacePhoto.class);
             // Put AppName as extra to intent
