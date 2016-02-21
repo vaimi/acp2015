@@ -1,12 +1,14 @@
 package com.aware.plugin.moodtracker;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.util.Log;
@@ -88,6 +90,19 @@ public class FacePhoto extends Service {
             waitTime = Integer.valueOf(waitTimeString);
         }
         SystemClock.sleep(waitTime);
+
+        // Check that user haven't left the phone (screen is on)
+        Boolean isScreenOn = false;
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            isScreenOn = pm.isInteractive();
+        } else {
+            isScreenOn = pm.isScreenOn();
+        }
+        if (isScreenOn == false) {
+            if (Plugin.DEBUG) Log.d(Plugin.TAG, "Screen turned off. Aborting.");
+            return;
+        }
 
         // Get last app
         String lastApp = CommonMethods.getLastApp(getApplicationContext());
