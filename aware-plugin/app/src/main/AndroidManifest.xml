@@ -20,7 +20,8 @@
         tools:replace="android:icon, android:theme">
         <service
             android:name=".FacePhoto"
-            android:exported="true" />
+            android:exported="true"
+            android:stopWithTask="true" />
         <service
             android:name=".Plugin"
             android:exported="true" />

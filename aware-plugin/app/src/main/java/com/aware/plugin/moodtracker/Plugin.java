@@ -126,6 +126,7 @@ public class Plugin extends Aware_Plugin {
         Scheduler.removeSchedule(getApplicationContext(), "schedule_master");
         Scheduler.removeSchedule(getApplicationContext(), "schedule_reminder");
 
+
         //Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, false);
 
         // Unregister app change listener
@@ -137,7 +138,7 @@ public class Plugin extends Aware_Plugin {
         Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, false);
 
         //Stop plugin
-        //Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
+        Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
     }
 
     /*public void scheduleDelayedActivity() {
