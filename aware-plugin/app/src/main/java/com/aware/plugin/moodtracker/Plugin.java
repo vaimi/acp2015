@@ -14,6 +14,9 @@ import android.net.Uri;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Plugin extends Aware_Plugin {
     private static AppChangeListener acl = new AppChangeListener();
     private static EsmListener esml = new EsmListener();
@@ -26,19 +29,24 @@ public class Plugin extends Aware_Plugin {
         DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
         //Initialize our plugin's settings
-        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER).length() == 0 ) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, true);
+        String pluginOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER);
+        if (!(pluginOn.equals("true") || pluginOn.equals("false"))) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, "true");
         }
-        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD).length() == 0 ) {
+        String contextcardOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD);
+        if (!(contextcardOn.equals("1") || contextcardOn.equals("0"))) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, "1");
         }
-        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).length() == 0 ) {
+        String esmOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM);
+        if (!(esmOn.equals("1") || esmOn.equals("0"))) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, "1");
         }
-        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW).length() == 0 ) {
+        String previewOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW);
+        if (!(previewOn.equals("1") || previewOn.equals("0"))) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, "1");
         }
-        if( Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO).length() == 0 ) {
+        String photoOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO);
+        if (!(photoOn.equals("1") || photoOn.equals("0"))) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, "1");
         }
         if( Aware.getSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT).length() == 0 ) {
@@ -85,7 +93,7 @@ public class Plugin extends Aware_Plugin {
             schedule.addHour(12) //0-23
                     .addHour(15)
                     .addHour(18)
-                    .addHour(20)
+                    .addHour(21)
                     .setActionType(Scheduler.ACTION_TYPE_BROADCAST)
                     .setActionClass("com.aware.plugin.moodtracker.esm.launch");
                     //.setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
@@ -115,8 +123,10 @@ public class Plugin extends Aware_Plugin {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Scheduler.removeSchedule(getApplicationContext(), "schedule_master");
+        Scheduler.removeSchedule(getApplicationContext(), "schedule_reminder");
 
-        Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, false);
+        //Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, false);
 
         // Unregister app change listener
         unregisterReceiver(acl);
@@ -127,7 +137,7 @@ public class Plugin extends Aware_Plugin {
         Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, false);
 
         //Stop plugin
-        Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
+        //Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
     }
 
     /*public void scheduleDelayedActivity() {
