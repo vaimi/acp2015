@@ -1,28 +1,18 @@
 package com.aware.plugin.moodtracker;
 
-import android.app.Activity;
-import android.content.Context;
+import android.Manifest;
 import android.content.Intent;
 
 import com.aware.Applications;
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
-import com.aware.ESM;
 import com.aware.utils.Aware_Plugin;
 import com.aware.utils.Scheduler;
 
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.util.Log;
 
 import org.json.JSONException;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.jar.Manifest;
 
 public class Plugin extends Aware_Plugin {
     private static AppChangeListener acl = new AppChangeListener();
@@ -80,8 +70,8 @@ public class Plugin extends Aware_Plugin {
         };
 
         //Add permissions you need (Support for Android M) e.g.,
-        //REQUIRED_PERMISSIONS.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        //REQUIRED_PERMISSIONS.add(Manifest.permission.CAMERA);
+        REQUIRED_PERMISSIONS.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        REQUIRED_PERMISSIONS.add(Manifest.permission.CAMERA);
 
         //To sync data to the server, you'll need to set this variables from your ContentProvider
         DATABASE_TABLES = Provider.DATABASE_TABLES;
