@@ -122,9 +122,11 @@ public class FacePhoto extends Service {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                            camera.takePicture(null,
-                                    null,
-                                    new PhotoHandler(getApplicationContext(), lastIntent));
+                                if (camera != null) {
+                                    camera.takePicture(null,
+                                            null,
+                                            new PhotoHandler(getApplicationContext(), lastIntent));
+                                }
                             }
                         }, previewTime);
 
@@ -132,7 +134,7 @@ public class FacePhoto extends Service {
                     else {
                         releaseCameraAndPreview();
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     releaseCameraAndPreview();
                     if (Plugin.DEBUG) Log.d(Plugin.TAG, "Exception on camera handing, aborting");
                 }
