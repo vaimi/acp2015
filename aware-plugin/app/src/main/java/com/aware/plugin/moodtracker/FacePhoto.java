@@ -35,6 +35,14 @@ public class FacePhoto extends Service {
         if (Plugin.DEBUG) Log.d(Plugin.TAG, "Created camera service");
     }
 
+    private void releaseCameraAndPreview() {
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+        }
+    }
+
     /**
      * Prepares camera to take picture. NOTE that it doesn't steal the camera if it's reserved!
      *
@@ -46,18 +54,13 @@ public class FacePhoto extends Service {
         if (cameraId != -1) {
             try {
                 camera = Camera.open(cameraId);
-            } catch (Exception e) {
-                if (Plugin.DEBUG) Log.d(Plugin.TAG, "Camera reserved, aborting");
-                return false;
-            }
-            try {
                 // Hack to make preview-less camera
                 camera.setPreviewTexture(new SurfaceTexture(0));
                 cameraParameters = camera.getParameters();
                 camera.setParameters(cameraParameters);
                 camera.startPreview();
             } catch (IOException e) {
-                if (Plugin.DEBUG) Log.d(Plugin.TAG, "Cannot make preview, aborting");
+                if (Plugin.DEBUG) Log.d(Plugin.TAG, "Failed to make surface, aborting");
                 return false;
             }
         } else {
@@ -112,25 +115,26 @@ public class FacePhoto extends Service {
             if (intent == null) return;
             if (lastApp.equals(intent.getExtras().getString("AppName"))) {
                 // Prepare camera
-                if (prepareCamera()) {
-                    final Intent lastIntent = intent;
-                    // Wait a bit to warm up the camera
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                                try {
-                                camera.takePicture(null,
-                                        null,
-                                        new PhotoHandler(getApplicationContext(), lastIntent));
-                                } catch (Exception e) {
-                                    if (camera != null) {
-                                        camera.stopPreview();
-                                        camera.release();
-                                    }
-                                }
+                try {
+                    if (prepareCamera()) {
+                        final Intent lastIntent = intent;
+                        // Wait a bit to warm up the camera
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                            camera.takePicture(null,
+                                    null,
+                                    new PhotoHandler(getApplicationContext(), lastIntent));
                             }
-                    }, previewTime);
+                        }, previewTime);
 
+                    }
+                    else {
+                        releaseCameraAndPreview();
+                    }
+                } catch (Exception e) {
+                    releaseCameraAndPreview();
+                    if (Plugin.DEBUG) Log.d(Plugin.TAG, "Exception on camera handing, aborting");
                 }
             } else {
                 if (Plugin.DEBUG) Log.d(Plugin.TAG, "App on front changed. Aborting");
