@@ -22,9 +22,11 @@ public class CameraActivity extends Activity {
     private CameraView mCameraView = null;
 
     private void releaseCameraAndPreview() {
-        if (mCamera != null) {
+        try {
             mCamera.stopPreview();
             mCamera.release();
+            mCamera = null;
+        } catch (RuntimeException e) {
             mCamera = null;
         }
     }

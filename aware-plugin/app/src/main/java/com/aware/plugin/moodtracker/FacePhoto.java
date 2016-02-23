@@ -37,9 +37,13 @@ public class FacePhoto extends Service {
 
     private void releaseCameraAndPreview() {
         if (camera != null) {
-            camera.stopPreview();
-            camera.release();
-            camera = null;
+            try {
+                camera.stopPreview();
+                camera.release();
+                camera = null;
+            } catch (RuntimeException e) {
+                camera = null;
+            }
         }
     }
 
