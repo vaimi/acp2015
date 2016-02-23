@@ -28,11 +28,7 @@ public class Plugin extends Aware_Plugin {
         TAG = "AWARE::"+getResources().getString(R.string.app_name);
         DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
-        //Initialize our plugin's settings
-        String pluginOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER);
-        if (!(pluginOn.equals("true") || pluginOn.equals("false"))) {
-            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, "true");
-        }
+        Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, true);
         String contextcardOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD);
         if (!(contextcardOn.equals("1") || contextcardOn.equals("0"))) {
             Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, "1");

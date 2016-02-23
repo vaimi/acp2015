@@ -60,13 +60,37 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
         status.setChecked(Aware.getSetting(getApplicationContext(), STATUS_PLUGIN_MOODTRACKER).equals("true"));
 
         statusContextCard = (ListPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD);
+        String contextcardOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD);
+        if (!(contextcardOn.equals("1") || contextcardOn.equals("0"))) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_CONTEXTCARD, "1");
+        }
+        statusContextCard.setValue(contextcardOn);
 
         statusEsm = (ListPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_ESM);
+        String esmOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM);
+        if (!(esmOn.equals("1") || esmOn.equals("0"))) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM, "1");
+        }
+        statusEsm.setValue(esmOn);
 
         statusEsmPreview = (ListPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW);
+        String previewOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW);
+        if (!(previewOn.equals("1") || previewOn.equals("0"))) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_ESM_PREVIEW, "1");
+        }
+        statusEsmPreview.setValue(previewOn);
 
         statusPhoto = (ListPreference) findPreference(STATUS_PLUGIN_MOODTRACKER_PHOTO);
+        String photoOn = Aware.getSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO);
+        if (!(photoOn.equals("1") || photoOn.equals("0"))) {
+            Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER_PHOTO, "1");
+        }
+        statusPhoto.setValue(photoOn);
 
+
+        if( Aware.getSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT).length() == 0 ) {
+            Aware.setSetting(getApplicationContext(), Settings.PLUGIN_MOODTRACKER_WAIT, "5000");
+        }
         waitTime = (EditTextPreference) findPreference(PLUGIN_MOODTRACKER_WAIT);
         waitTime.setText(Aware.getSetting(getApplicationContext(), PLUGIN_MOODTRACKER_WAIT));
         waitTime.setSummary("Wait " + Aware.getSetting(getApplicationContext(), PLUGIN_MOODTRACKER_WAIT) + " ms after app launch");
