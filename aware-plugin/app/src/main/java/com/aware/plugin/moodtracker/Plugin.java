@@ -100,8 +100,8 @@ public class Plugin extends Aware_Plugin {
             Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_master");
             schedule.addHour(12) //0-23
                     .addHour(15)
-                    .addHour(19)
-                    .addHour(22)
+                    .addHour(20)
+                    .addHour(21)
                     .setActionType(Scheduler.ACTION_TYPE_BROADCAST)
                     .setActionClass("com.aware.plugin.moodtracker.esm.launch");
                     //.setActionType(Scheduler.ACTION_TYPE_ACTIVITY)
