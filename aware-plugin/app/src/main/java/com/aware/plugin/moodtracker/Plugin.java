@@ -11,6 +11,8 @@ import com.aware.utils.Scheduler;
 
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import org.json.JSONException;
 
@@ -20,6 +22,13 @@ import java.util.List;
 public class Plugin extends Aware_Plugin {
     private static AppChangeListener acl = new AppChangeListener();
     private static EsmListener esml = new EsmListener();
+
+    public static String ACTION_AWARE_MOODTRACKER = "ACTION_AWARE_MOODTRACKER";
+    public static String EXTRA_HAPPINESS = "happiness";
+    public static String EXTRA_TRIGGER = "trigger";
+
+    public static float current_happiness = 0;
+    public static String current_trigger = "";
 
     @Override
     public void onCreate() {
@@ -69,7 +78,10 @@ public class Plugin extends Aware_Plugin {
         CONTEXT_PRODUCER = new ContextProducer() {
             @Override
             public void onContext() {
-                //Broadcast your context here
+                Intent context = new Intent(ACTION_AWARE_MOODTRACKER);
+                context.putExtra(EXTRA_HAPPINESS, current_happiness);
+                context.putExtra(EXTRA_TRIGGER, current_trigger);
+                sendBroadcast(context);
             }
         };
 
@@ -88,7 +100,7 @@ public class Plugin extends Aware_Plugin {
             Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_master");
             schedule.addHour(12) //0-23
                     .addHour(15)
-                    .addHour(18)
+                    .addHour(19)
                     .addHour(22)
                     .setActionType(Scheduler.ACTION_TYPE_BROADCAST)
                     .setActionClass("com.aware.plugin.moodtracker.esm.launch");
@@ -119,6 +131,7 @@ public class Plugin extends Aware_Plugin {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         Scheduler.removeSchedule(getApplicationContext(), "schedule_master");
         Scheduler.removeSchedule(getApplicationContext(), "schedule_reminder");
 
@@ -134,7 +147,7 @@ public class Plugin extends Aware_Plugin {
         Aware.setSetting(this, Aware_Preferences.STATUS_APPLICATIONS, false);
 
         //Stop plugin
-        Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
+        //Aware.stopPlugin(this, "com.aware.plugin.moodtracker");
     }
 
     /*public void scheduleDelayedActivity() {

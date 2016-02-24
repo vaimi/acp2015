@@ -168,6 +168,14 @@ public class PhotoHandler implements Camera.PictureCallback {
 
         //Insert the data to the ContentProvider
         context.getContentResolver().insert(Provider.Moodtracker_Data.CONTENT_URI, new_data);
+
+        Plugin.current_happiness = happiness;
+        Plugin.current_trigger = intent.getExtras().getString("AppName");
+
+        Intent bContext = new Intent( Plugin.ACTION_AWARE_MOODTRACKER );
+        bContext.putExtra(Plugin.EXTRA_HAPPINESS, Plugin.current_happiness);
+        bContext.putExtra( Plugin.EXTRA_TRIGGER, Plugin.current_trigger );
+        context.sendBroadcast( bContext );
     }
 
     /**

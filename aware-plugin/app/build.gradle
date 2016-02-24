@@ -12,7 +12,7 @@ android {
         versionCode 7
         versionName "1.06"
         // Enabling multidex support.
-        //multiDexEnabled true
+        multiDexEnabled true
     }
     buildTypes {
         release {
