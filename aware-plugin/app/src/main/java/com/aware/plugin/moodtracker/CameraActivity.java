@@ -1,6 +1,7 @@
 package com.aware.plugin.moodtracker;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -70,6 +71,11 @@ public class CameraActivity extends Activity {
                 try {
                     mCamera.setPreviewTexture(new SurfaceTexture(0));
                     mCamera.startPreview();
+                    final ProgressDialog progress = new ProgressDialog(this);
+                    progress.setTitle("Saving");
+                    progress.setMessage("Wait while saving...");
+                    progress.show();
+// To dismiss the dialog
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -83,6 +89,7 @@ public class CameraActivity extends Activity {
                             } catch (Exception e) {
                                 releaseCameraAndPreview();
                             }
+                            progress.dismiss();
                             closeActivity();
                         }
                     }, 5000);
@@ -97,14 +104,5 @@ public class CameraActivity extends Activity {
                 camera_view.addView(mCameraView);//add the SurfaceView to the layout
             }
         }
-
-        //btn to close the application
-        ImageButton imgClose = (ImageButton)findViewById(R.id.imgClose);
-        imgClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                closeActivity();
-            }
-        });
     }
 }
