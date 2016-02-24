@@ -132,7 +132,7 @@ public class EsmQuestionnaire extends Activity {
         // start ESMQuestionnaire activity in 5 min
         Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_reminder");
         long time = Calendar.getInstance().getTimeInMillis();
-        long timeToRemind = time + 300000;
+        long timeToRemind = time + 900000;
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(timeToRemind);
         try {
