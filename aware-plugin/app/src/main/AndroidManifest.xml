@@ -28,7 +28,8 @@
             android:stopWithTask="true" />
         <service
             android:name=".Plugin"
-            android:exported="true" />
+            android:exported="true"
+            android:process=":remote"/>
 
         <activity
             android:name=".Settings"
