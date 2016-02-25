@@ -88,12 +88,13 @@ public class Plugin extends Aware_Plugin {
         //Add permissions you need (Support for Android M) e.g.,
         REQUIRED_PERMISSIONS.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         REQUIRED_PERMISSIONS.add(Manifest.permission.CAMERA);
+        REQUIRED_PERMISSIONS.add(Manifest.permission.SET_ALARM);
 
         //To sync data to the server, you'll need to set this variables from your ContentProvider
         DATABASE_TABLES = Provider.DATABASE_TABLES;
         TABLES_FIELDS = Provider.TABLES_FIELDS;
         CONTEXT_URIS = new Uri[]{ Provider.Moodtracker_Data.CONTENT_URI };
-        Scheduler.removeSchedule(getApplicationContext(), "schedule_master");
+        //Scheduler.removeSchedule(getApplicationContext(), "schedule_master");
         //Activate plugin
         Aware.startPlugin(this, "com.aware.plugin.moodtracker");
         try{
@@ -131,9 +132,10 @@ public class Plugin extends Aware_Plugin {
     public void onDestroy() {
         super.onDestroy();
 
-        Scheduler.removeSchedule(getApplicationContext(), "schedule_master");
-        Scheduler.removeSchedule(getApplicationContext(), "schedule_reminder");
+        if (Plugin.DEBUG) Log.d(Plugin.TAG, "Destroying service");
 
+        //Scheduler.removeSchedule(getApplicationContext(), "schedule_master");
+        //Scheduler.removeSchedule(getApplicationContext(), "schedule_reminder");
 
         //Aware.setSetting(this, Settings.STATUS_PLUGIN_MOODTRACKER, false);
 

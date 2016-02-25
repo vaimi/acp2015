@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.aware.Aware;
+import com.aware.utils.Scheduler;
 
 import java.util.TreeMap;
 
@@ -22,7 +23,6 @@ public class EsmListener extends BroadcastReceiver {
         if (!Aware.getSetting(c, Settings.STATUS_PLUGIN_MOODTRACKER_ESM).equals("1")) {
             return;
         }
-
         // Workaround to filer esm entries
         /*Cursor cursor = context.getContentResolver()
                 .query(Provider.Moodtracker_Data.CONTENT_URI, new String[] {"timestamp"}, "trigger='ESMHAPPINESS'", null, "timestamp DESC LIMIT 1");

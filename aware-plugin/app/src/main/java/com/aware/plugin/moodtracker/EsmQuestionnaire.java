@@ -21,6 +21,7 @@ import com.aware.utils.Scheduler;
 import org.json.JSONException;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * Created by vaimi on 3.12.2015.
@@ -29,6 +30,7 @@ import java.util.Calendar;
 
 public class EsmQuestionnaire extends Activity {
 
+    private Boolean submitted = false;
     private SeekBar seekBar;
     private int moodValue;
     private int stepSize = 20;
@@ -87,13 +89,13 @@ public class EsmQuestionnaire extends Activity {
                 new_data.put(Provider.Moodtracker_Data.DEVICE_ID, Aware.getSetting(getApplicationContext(), Aware_Preferences.DEVICE_ID));
                 new_data.put(Provider.Moodtracker_Data.TIMESTAMP, System.currentTimeMillis());
                 new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, moodValue);
-                new_data.put(Provider.Moodtracker_Data.TRIGGER, "ESMHAPPINESS");
 
                 //Insert the data to the ContentProvider
                 getApplicationContext()
                         .getContentResolver()
                         .insert(Provider.Moodtracker_Data.CONTENT_URI, new_data);
 
+                submitted = true;
                 if (Plugin.DEBUG) Log.d("submit", "pressed");
                 Intent cameraIntent = new Intent(getApplicationContext(), CameraActivity.class);
                 startActivity(cameraIntent);
@@ -106,33 +108,30 @@ public class EsmQuestionnaire extends Activity {
         asklaterbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                remindLater();
+                finish();
             }
         });
 
     }
 
-    private void remindLater(){
-        if (Plugin.DEBUG) Log.d("delay", "pressed");
-        editor = prefs.edit();
-        editor.commit();
-        scheduleReminder();
-
-        /*
-        Intent myIntent = new Intent(getApplicationContext(), MyReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, 0);
-        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 300000, pendingIntent);
-        */
-        finish();
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        if (!submitted) scheduleReminder();
     }
 
     private void scheduleReminder() {
-        Scheduler.removeSchedule(getApplicationContext(), "schedule_reminder");
+        Log.d(Plugin.TAG, "Esm Rescheduled");
+        Intent myIntent = new Intent(getApplicationContext(), EsmListener.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, 0);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 15 * 60 * 1000, pendingIntent);
+        /*Scheduler.removeSchedule(getApplicationContext(), "schedule_reminder");
         // start ESMQuestionnaire activity in 5 min
-        Scheduler.Schedule schedule = new Scheduler.Schedule("schedule_reminder");
-        long time = Calendar.getInstance().getTimeInMillis();
-        long timeToRemind = time + 900000;
+        Scheduler.Schedule schedule = new com.aware.plugin.moodtracker.Scheduler.Schedule("schedule_reminder");
+        long time = System.currentTimeMillis();
+        long timeToRemind = time + 15*60*1000;
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(timeToRemind);
         try {
@@ -144,8 +143,7 @@ public class EsmQuestionnaire extends Activity {
             e.printStackTrace();
         }
 
-        Scheduler.saveSchedule(getApplicationContext(), schedule);
-        if (Plugin.DEBUG) Log.d(Plugin.TAG, "Esm Rescheduled");
+        Scheduler.saveSchedule(getApplicationContext(), schedule);*/
     }
 
 

@@ -79,72 +79,76 @@ public class FacePhoto extends Service {
      * @param startID
      */
     @Override
-    public void onStart(Intent sIntent, int startID) {
-        super.onStart(sIntent, startID);
-        final Intent intent = sIntent;
+    public int onStartCommand(final Intent sIntent, int sFlags, int startID) {
+        super.onStartCommand(sIntent, sFlags, startID);
         new Thread(new Runnable() {
-            public void run(){
-                if (Plugin.DEBUG) Log.d(Plugin.TAG, "Connected camera service");
-
-                if (Build.VERSION.SDK_INT > 9) {
-                    StrictMode.ThreadPolicy policy =
-                            new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                    StrictMode.setThreadPolicy(policy);
-                }
-
-                // Wait before taking the photo.
-                String waitTimeString = Aware.getSetting(getApplicationContext(),
-                        Settings.PLUGIN_MOODTRACKER_WAIT);
-                int waitTime = 5000;
-                if (waitTimeString != "" && waitTimeString.matches("^\\d+$")) {
-                    waitTime = Integer.valueOf(waitTimeString);
-                }
-                SystemClock.sleep(waitTime);
-
-                // Check that user haven't left the phone (screen is on)
-                Boolean isScreenOn = false;
-                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    isScreenOn = pm.isInteractive();
-                } else {
-                    isScreenOn = pm.isScreenOn();
-                }
-                if (isScreenOn == false) {
-                    if (Plugin.DEBUG) Log.d(Plugin.TAG, "Screen turned off. Aborting.");
-                    return;
-                }
-
-                // Get last app
-                String lastApp = CommonMethods.getLastApp(getApplicationContext());
-
-                if (lastApp != null) {
-                    // Check that app on front haven't changed
-                    if (intent == null) return;
-                    if (lastApp.equals(intent.getExtras().getString("AppName"))) {
-                        // Prepare camera
-                        try {
-                            if (prepareCamera()) {
-                                final Intent lastIntent = intent;
-                                // Wait a bit to warm up the camera
-                                SystemClock.sleep(previewTime);
-                                camera.takePicture(null,
-                                        null,
-                                        new PhotoHandler(getApplicationContext(), lastIntent));
-                            }
-                            else {
-                                releaseCameraAndPreview();
-                            }
-                        } catch (RuntimeException e) {
-                            releaseCameraAndPreview();
-                            if (Plugin.DEBUG) Log.d(Plugin.TAG, "Exception on camera handing, aborting");
-                        }
-                    } else {
-                        if (Plugin.DEBUG) Log.d(Plugin.TAG, "App on front changed. Aborting");
-                    }
-                } else {
-                    Log.e(Plugin.TAG, "Unable to fetch last app");
-                }
+            public void run() {
+                takeFacePhoto(sIntent);
             }
         }).start();
+        return START_NOT_STICKY;
+    }
+
+    private void takeFacePhoto(Intent intent) {
+        if (Plugin.DEBUG) Log.d(Plugin.TAG, "Connected camera service");
+
+        if (Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy =
+                    new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+
+        // Wait before taking the photo.
+        String waitTimeString = Aware.getSetting(getApplicationContext(),
+                Settings.PLUGIN_MOODTRACKER_WAIT);
+        int waitTime = 5000;
+        if (waitTimeString != "" && waitTimeString.matches("^\\d+$")) {
+            waitTime = Integer.valueOf(waitTimeString);
+        }
+        SystemClock.sleep(waitTime);
+
+        // Check that user haven't left the phone (screen is on)
+        Boolean isScreenOn = false;
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            isScreenOn = pm.isInteractive();
+        } else {
+            isScreenOn = pm.isScreenOn();
+        }
+        if (isScreenOn == false) {
+            if (Plugin.DEBUG) Log.d(Plugin.TAG, "Screen turned off. Aborting.");
+            return;
+        }
+
+        // Get last app
+        String lastApp = CommonMethods.getLastApp(getApplicationContext());
+
+        if (lastApp != null) {
+            // Check that app on front haven't changed
+            if (intent == null) return;
+            if (lastApp.equals(intent.getExtras().getString("AppName"))) {
+                // Prepare camera
+                try {
+                    if (prepareCamera()) {
+                        final Intent lastIntent = intent;
+                        // Wait a bit to warm up the camera
+                        SystemClock.sleep(previewTime);
+                        camera.takePicture(null,
+                                null,
+                                new PhotoHandler(getApplicationContext(), lastIntent));
+                    }
+                    else {
+                        releaseCameraAndPreview();
+                    }
+                } catch (RuntimeException e) {
+                    releaseCameraAndPreview();
+                    if (Plugin.DEBUG) Log.d(Plugin.TAG, "Exception on camera handing, aborting");
+                }
+            } else {
+                if (Plugin.DEBUG) Log.d(Plugin.TAG, "App on front changed. Aborting");
+            }
+        } else {
+            Log.e(Plugin.TAG, "Unable to fetch last app");
+        }
     }
 }

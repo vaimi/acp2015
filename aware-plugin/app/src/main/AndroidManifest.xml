@@ -5,8 +5,10 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
     <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <meta-data
         android:name="com.google.android.gms.version"
@@ -24,11 +26,11 @@
         tools:replace="android:icon, android:theme">
         <service
             android:name=".FacePhoto"
-            android:exported="true"
-            android:stopWithTask="true" />
+            android:exported="true" />
         <service
             android:name=".Plugin"
             android:exported="true"
+            android:launchMode="singleInstance"
             android:process=":remote"/>
 
         <activity
@@ -39,6 +41,9 @@
         <activity
             android:name=".EsmQuestionnaire"
             android:exported="true"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:launchMode="singleInstance">
             android:theme="@style/Theme.Aware">
         </activity>
 
@@ -51,7 +56,6 @@
             </intent-filter>
         </activity>
 
-
         <provider
             android:name=".Provider"
             android:authorities="${applicationId}.provider.moodtracker"
@@ -59,10 +63,14 @@
             android:readPermission="com.aware.READ_CONTEXT_DATA"
             android:writePermission="com.aware.WRITE_CONTEXT_DATA" />
 
-        <activity android:name=".CameraActivity" >
+        <activity android:name=".CameraActivity"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:launchMode="singleInstance">
         </activity>
 
-        <receiver android:name=".MyReceiver" />
+        <receiver android:name=".EsmListener" />
+
     </application>
 
 </manifest>

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -22,7 +23,7 @@ public class MoodHistory extends Activity {
 
         Intent aware = new Intent(this, Aware.class);
         startService(aware);
-
+        SystemClock.sleep(500);
         LinearLayout parent = (LinearLayout) findViewById(R.id.activity_card);
         parent.addView(new ContextCard().getContextCard(getApplicationContext()));
     }
