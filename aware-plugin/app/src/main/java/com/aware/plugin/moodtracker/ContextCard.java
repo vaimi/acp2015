@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class ContextCard implements IContextCard {
     //Empty constructor
@@ -136,7 +137,7 @@ public class ContextCard implements IContextCard {
                     + Provider.Moodtracker_Data.TIMESTAMP + " < " + myDate.getMonthEndTime(), null, null);
 
         //Process data first. 0, 20, 40, 60, 80, 100, 120
-        HashMap<Integer, HappinessObject> mDayHappiness = new HashMap<>();
+        TreeMap<Integer, HappinessObject> mDayHappiness = new TreeMap<Integer, HappinessObject>();
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 //Log.d("AWARE", "" + cursor.getLong(0) + " " + cursor.getDouble(1));
