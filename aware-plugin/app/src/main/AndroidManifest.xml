@@ -4,8 +4,8 @@
     package="com.aware.plugin.moodtracker">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <!-- Enable this if you want to save pictures
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />

@@ -91,7 +91,7 @@ public class EsmQuestionnaire extends Activity {
                 new_data.put(Provider.Moodtracker_Data.DEVICE_ID, Aware.getSetting(getApplicationContext(), Aware_Preferences.DEVICE_ID));
                 new_data.put(Provider.Moodtracker_Data.TIMESTAMP, System.currentTimeMillis());
                 new_data.put(Provider.Moodtracker_Data.HAPPINESS_VALUE, moodValue);
-
+                new_data.put(Provider.Moodtracker_Data.TRIGGER, "ESMHAPPINESS");
                 //Insert the data to the ContentProvider
                 getApplicationContext()
                         .getContentResolver()
