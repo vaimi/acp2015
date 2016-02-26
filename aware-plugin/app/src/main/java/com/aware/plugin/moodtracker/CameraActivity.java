@@ -89,7 +89,11 @@ public class CameraActivity extends Activity {
                             } catch (Exception e) {
                                 releaseCameraAndPreview();
                             }
-                            progress.dismiss();
+                            try {
+                                progress.dismiss();
+                            } catch (final IllegalArgumentException e) {
+                                // Sometimes window is closed already.
+                            }
                             closeActivity();
                         }
                     }, 5000);
