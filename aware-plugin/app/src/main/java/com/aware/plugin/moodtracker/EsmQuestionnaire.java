@@ -36,6 +36,7 @@ public class EsmQuestionnaire extends Activity {
     private int stepSize = 20;
     private Button asklaterbtn;
     private Button submitbtn;
+    private static AlarmManager alarmManager;
     private SharedPreferences prefs;
     public static final String MyPREFERENCES = "MyPrefs" ;
     SharedPreferences.Editor editor;
@@ -56,6 +57,7 @@ public class EsmQuestionnaire extends Activity {
         seekBar.setMax(120);
         seekBar.setProgress(60);
 
+        alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -96,6 +98,9 @@ public class EsmQuestionnaire extends Activity {
                         .insert(Provider.Moodtracker_Data.CONTENT_URI, new_data);
 
                 submitted = true;
+                Intent myIntent = new Intent(getApplicationContext(), EsmListener.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                alarmManager.cancel(pendingIntent);
                 if (Plugin.DEBUG) Log.d("submit", "pressed");
                 Intent cameraIntent = new Intent(getApplicationContext(), CameraActivity.class);
                 startActivity(cameraIntent);
@@ -124,8 +129,9 @@ public class EsmQuestionnaire extends Activity {
     private void scheduleReminder() {
         Log.d(Plugin.TAG, "Esm Rescheduled");
         Intent myIntent = new Intent(getApplicationContext(), EsmListener.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, 0);
-        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(pendingIntent);
+
         alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 15 * 60 * 1000, pendingIntent);
         /*Scheduler.removeSchedule(getApplicationContext(), "schedule_reminder");
         // start ESMQuestionnaire activity in 5 min
