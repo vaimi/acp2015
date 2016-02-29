@@ -23,6 +23,8 @@ public class MoodHistory extends Activity {
 
         Intent aware = new Intent(this, Aware.class);
         startService(aware);
+        Intent plugin = new Intent(this, Plugin.class);
+        startService(plugin);
         SystemClock.sleep(500);
         LinearLayout parent = (LinearLayout) findViewById(R.id.activity_card);
         parent.addView(new ContextCard().getContextCard(getApplicationContext()));
